@@ -6,6 +6,7 @@ from utils.integrator import *
 
 def main():
     der = np.identity(dimension)
+    print(der)
     new_norm = np.zeros(lyap_num)
     P = [0 for i in range(dimension)]
 
@@ -29,7 +30,7 @@ def main():
             makeStepVar(der[j], dimension, diffFuncVarF, params, step, initial_point)
             new_norm[j] = np.linalg.norm(der[j])
             der[j] = der[j] / new_norm[j]
-            P[j] = P[j] + m.log(new_norm[j])
+            P[j] += m.log(new_norm[j])
         ortVecs(der, dimension, lyap_num)
         makeStep(initial_point, dimension, diffFunc, params, step)
     print("***********TIME for SKIP_VAR + MainTraj:", time.time() - start)

@@ -24,7 +24,6 @@ def main():
         ortVecs(der, dimension, lyap_num)
         makeStep(initial_point, dimension, diffFunc, params, step)
 
-
     for i in range(int(integrate_time/step)):
         for j in range(lyap_num):
             makeStepVar(der[j], dimension, diffFuncVarF, params, step, initial_point)

@@ -50,75 +50,97 @@ def dverkStep(val, dimension, diffFunc, params, step, H=1) -> None:
         val[j] = val[j] + step * (3. / 40. * k1[j] + 875. / 2244. * k3[j] + 23. / 72. * k4[j] + 264. / 1955. * k5[j] + 125. / 11592. * k7[j] + 43. / 616. * k8[j])
 
 
-alpha = 1.0470925324675324
-lamda = 0.5988294354838709
-LE_1 = 0.0026132984145119
-crossesction = 1
-params = np.array(1.0470925324675324, 0.5988294354838709, 0.2]) # alpha lamda B
-# params = np.array([1.13, 0.48]) # alpha lamda 
-initial_point = np.array([0.000000001, 0, 0])
-time = 5000
+crossesction = 1.25
+# params = np.array([1.371672077922078, 0.43540322580645163, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 0
+params = np.array([1.05167, 0.6013812096774193, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 1
+params = np.array([1.04476, 0.60583, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 3
+params = np.array([1.0498470941558442,0.6015436612903226, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 
+params = np.array([1.04200000,0.59800000, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY
+params = np.array([1.364,0.459, 0.2], dtype=np.longdouble) # alpha lamda ФИНАЛЬНАЯ ОЦЕНКА ВОЗЛЕ ПЕРВОГО КРИТЕРИЯ
+params = np.array([1.045,0.588, 0.2], dtype=np.longdouble) # alpha lamda ФИНАЛЬНАЯ ОЦЕНКА ВОЗЛЕ ВТОРОГО КРИТЕРИЯ Лакуна 4
+
+iter_param = 2
+initial_point = np.array([0.0000001, 0, 0], dtype=np.longdouble)
+skip_time = 0
+time = 50000
 step = 0.01
 dimension = 3
-coord_list = []
+coord_list_for_frm = []
+coord_list_for_poincare = []
 coord_list_for_phase = []
 
 print('1) saddle index is ', -((-params[0]+(params[0]**2+4)**(1/2))/2) / (-params[1]))
 nu = -((-params[1]) / ((-params[0]+(params[0]**2+4)**(1/2))/2))
 print('2) saddle index is ', nu)
 
-f = False
+for i in range(int(skip_time/step)):
+    dverkStep(initial_point, dimension, ShimizuX3_3D_flow, params, step)
+
 # итерации потока
+iter_count = iter_param - 1  # старуем с iter_param - 1 чтобы взять именно боковые точки
+# iter_count = 0  # старуем с 0 чтобы иметь норм треугольник
 for i in range(int(time/step)):
     z_last = initial_point[2] - crossesction
     dverkStep(initial_point, dimension, ShimizuX3_3D_flow, params, step)
-    if (initial_point[2] - crossesction > 0) and (z_last < 0) and not f:
+    if (initial_point[2] - crossesction > 0) and (z_last < 0):
         H = - params[1] * initial_point[2] + initial_point[0] ** 2
         dverkStep(initial_point, dimension, ShimizuX3_3D_flow, params, -(initial_point[2] - crossesction), H)
-        coord_list.append(list(initial_point[:3]))
-        f = True
-    elif (initial_point[2] - crossesction > 0) and (z_last < 0) and f:
-        f=False
+        iter_count += 1
+        if iter_count == iter_param:
+            iter_count = 0
+            coord_list_for_frm.append(list(initial_point[:3]))
+        coord_list_for_poincare.append(list(initial_point[:2]))
     coord_list_for_phase.append(list(initial_point))
 
 # отрисовка фазового
-transpose_list1 = (np.array(coord_list_for_phase)).T
-transpose_list = (np.array(coord_list)).T
+transpose_list1 = (np.array(coord_list_for_phase, dtype=np.longdouble)).T
+transpose_points_for_frm = (np.array(coord_list_for_frm, dtype=np.longdouble)).T
+transpose_points_for_poincare = (np.array(coord_list_for_poincare, dtype=np.longdouble)).T
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(projection='3d')
-ax1.plot(transpose_list1[0], transpose_list1[1], transpose_list1[2])
-ax1.scatter(transpose_list[0], transpose_list[1], transpose_list[2], s=5, c="red")
+ax1.plot(transpose_list1[0][::10], transpose_list1[1][::10], transpose_list1[2][::10]) # отрисовка фазового портрета
+ax1.scatter(transpose_points_for_frm[0], transpose_points_for_frm[1], transpose_points_for_frm[2], s=5, c="red") # отрисовка точек сечения которые идут для отображения первого возвращения
+np.save('2dimmaps/'+'a_'+f'{params[0]}'[:6]+'l_'+f'{params[1]}'[:9], transpose_points_for_poincare)
 
 # отрисовка сечения
 fig, ax = plt.subplots()
-ax.scatter(transpose_list[0], transpose_list[1], s=5, c="red")
+ax.scatter(transpose_points_for_poincare[0], transpose_points_for_poincare[1], s=5, c="black") # отрисовка точек сечения
+ax.scatter(transpose_points_for_frm[0], transpose_points_for_frm[1], s=5, c="red") # отрисовка точек сечения которые идут для отображения первого возвращения
 
 # подготовка массивов для одномерного отображения
 lx, ly = [], []
 max_point_x, max_point_y = -100, -100
-min_point_x, min_point_y = -100, -100
-for i in range(len(coord_list)-1):
-    if coord_list[i][0] > 0.0 and (abs(coord_list[i+1][0]) > coord_list[i][0]): # второе условие нужно если есть лакуна
-        lx.append(coord_list[i][0])
-        ly.append(abs(coord_list[i+1][0])) # abs
-        if abs(coord_list[i+1][0]) > max_point_y:
-            max_point_x = coord_list[i][0]
-            max_point_y = abs(coord_list[i+1][0])
-        elif coord_list[i][0] > min_point_x:
-            min_point_x = coord_list[i][0]
-            min_point_y = abs(coord_list[i+1][0])
+min_point_x, min_point_y = 1000, 1000
+for i in range(len(coord_list_for_frm)-1): # пробую y вместо x
+    # if (abs(coord_list_for_frm[i+1][0]) > coord_list_for_frm[i][0]): # условие нужно если есть лакуна
+        lx.append(abs(coord_list_for_frm[i][0])) # здесь пробую модуль
+        ly.append(abs(coord_list_for_frm[i+1][0])) # abs
+        if abs(coord_list_for_frm[i+1][0]) > max_point_y:
+            max_point_x = abs(coord_list_for_frm[i][0])
+            max_point_y = abs(coord_list_for_frm[i+1][0])
+        elif abs(coord_list_for_frm[i+1][0]) < min_point_y:
+            min_point_x = abs(coord_list_for_frm[i][0])
+            min_point_y = abs(coord_list_for_frm[i+1][0])
 
 print('mu (max) ', max_point_y)
 print('x0 (shift) ', max_point_x)
-print('lenght of the poicare list ', len(lx))
+print('lenght of the poicare list ', transpose_points_for_poincare[0])
+print('lenght of the акь list ', len(lx))
 print('angle is ', (max_point_y-min_point_y)/(max_point_x-min_point_x))
 
-with open('firstretMaps\\'+'Ha_'+f'{params[0]}'[:6]+'l_'+f'{params[1]}'[:6]+'.txt', 'w') as dat:
+fig2, ax2 = plt.subplots()
+ax2.scatter(lx, ly, s=5, c="red")
+
+with open('firstretMaps\\'+'Ha_'+f'{params[0]}'[:6]+'l_'+f'{params[1]}'[:9]+'.txt', 'w') as dat:
     dat.write(str(nu)) # nu
     dat.write('\n')
     dat.write(str(max_point_x)) # shift
     dat.write('\n')
     dat.write(str(max_point_y)) # mu
+    dat.write('\n')
+    dat.write(str(min_point_x)) # for cline down
+    dat.write('\n')
+    dat.write(str(min_point_y)) # for cline down
     dat.write('\n')
     for x in lx:
         dat.write(str(x))

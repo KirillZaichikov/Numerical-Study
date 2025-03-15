@@ -13,9 +13,9 @@ ax = fig.add_subplot(projection='3d')
 
 # менять тип графика в зависимости от размерности
 # for poincare map
-fig3Dim = plt.figure()
-ax3Dim = fig3Dim.add_subplot(projection='3d')
-# fig3Dim, ax3Dim = plt.subplots()
+# fig3Dim = plt.figure()
+# ax3Dim = fig3Dim.add_subplot(projection='3d')
+fig3Dim, ax3Dim = plt.subplots()
 
 
 def main():
@@ -46,6 +46,7 @@ def main():
     mas_for_poincare = mas_for_poincare[mas_for_poincare != None]
     mas_for_points = mas_for_points[mas_for_points != None]
     
+    print(mas_for_poincare)
     mas_for_poincare = mas_for_poincare.reshape((dimension-1, int(len(mas_for_poincare) / (dimension-1))))
     mas_for_points = mas_for_points.reshape((dimension, int(len(mas_for_points) / dimension)))
     print(mas_for_poincare.shape)
@@ -60,18 +61,25 @@ def main():
 
     plt.show()
 
-def flowPoincare(state, res, params):
-    H = (- params[2] * state[2] + params[3] * state[3] + state[0] * state[1])
-    res[0] = (params[0] * ( - state[0] + state[1] ) ) / H
-    res[1] = (state[0] * ( params[1] - state[2] ) - state[1]) / H
-    res[2] = (- params[2] * state[2] + params[3] * state[3] + state[0] * state[1]) / H
-    res[3] = (- params[2] * state[3] - params[3] * state[2]) / H
+# def flowPoincare(state, res, params):  # Lorenz4D
+#     H = (- params[2] * state[2] + params[3] * state[3] + state[0] * state[1])
+#     res[0] = (params[0] * ( - state[0] + state[1] ) ) / H
+#     res[1] = (state[0] * ( params[1] - state[2] ) - state[1]) / H
+#     res[2] = (- params[2] * state[2] + params[3] * state[3] + state[0] * state[1]) / H
+#     res[3] = (- params[2] * state[3] - params[3] * state[2]) / H
+
+def flowPoincare(state, res, params) -> None:  # ShimizuX3
+    # Param - alpha lamda B 
+    H = - params[1] * initial_point[2] + initial_point[0] ** 2
+    res[0] = state[1] / H
+    res[1] = (params[2] * pow ( state[0] , 3.0 ) - params[0] * state[1] - state[0] * state[2] + state[0]) / H
+    res[2] = (- params[1] * state[2] + pow ( state[0] , 2.0 )) / H
 
 # менять в зависимости от размерности и переменной
 def poincareMap(point, pre_point, massive, counter):
     if Lorenz4D_cross(point) > 0 and Lorenz4D_cross(pre_point) < 0:
         makeStep(point, dimension, flowPoincare, params, -Lorenz4D_cross(point))
-        massive[counter] = [point[0], point[1], point[3]] # или добавить еще переменную
+        massive[counter] = [point[0], point[1]] # или добавить еще переменную
         return counter + 1
     else:
         return counter

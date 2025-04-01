@@ -7,18 +7,22 @@ model_type = 'flow'
 # params = np.array([1.117, 0.5])
 # params = np.array([10, 28, 8/3]) # for 3DLorenz
 # params = np.array([1.367, 0.4, 0.2]) # for Shimizu3X
-params = np.array([10, 25, 8/3, 7]) # for 4dLorenz # 4.186139965, 44.08486,
+# params = np.array([10, 25, 8/3, 7]) # for 4dLorenz # 4.186139965, 44.08486,
 # params = np.array([1, 5])
 # params = np.array([-0.1, 5.1, 0])
-diffFunc = Lorenz_4D_flow
-diffFuncVarF = Lorenz_4D_flow_var # или None
-dimension = 4
-delta_params = 40 # for Lorenz3d 25 (z) for Lorenz4d 30/40 (y) for Shimizu3X 1.4(z)
+# params = np.array([1.371672077922078, 0.43540322580645163, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 0
+# params = np.array([1.3819673427222132, 0.4355835067637877, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 1
+params = np.array([1.0515918181818182, 0.6013812096774193, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 2
+# params = np.array([1.0501456818181818, 0.6030381935483871, 0.2]) # alpha lamda B for Shimizu3X
+diffFunc = ShimizuX3_3D_flow
+diffFuncVarF = None # или None
+dimension = 3
+crossection = 1 # for Lorenz3d 25 (z) for Lorenz4d 30/40 (y) for Shimizu3X 1.4(z)
 eps = 0.01 # for Lorenz3d 0.4 1 # for Shimizu3X 0.01
-step = 0.001
+step = 0.01
 skip_time = 0
-integrate_time = 100
-skip_for_phase = 1
+integrate_time = 800
+skip_for_phase = 40
 initial_point = np.zeros(dimension)
 # initial_point[0] = -params[0] + eps
 # initial_point[1] = -params[1] / params[0]
@@ -28,7 +32,7 @@ initial_point[2] = 0
 
 """for lyapunov"""
 lyap_num = 3
-skip_var_time = 50
+skip_var_time = 200
 
 """for kneadings"""
 seq_len = 500

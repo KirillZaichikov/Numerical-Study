@@ -7,23 +7,16 @@ from utils.integrator import *
 from models.model import *
 
 
-# for phase portret
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
-
-# менять тип графика в зависимости от размерности
-# for poincare map
-# fig3Dim = plt.figure()
-# ax3Dim = fig3Dim.add_subplot(projection='3d')
-fig3Dim, ax3Dim = plt.subplots()
-
+step = 0.01
+params = np.array([1.3131249999999999, 0.35854032258064517, 0.2], dtype=np.longdouble)
+integrate_time = 10000
+skip_for_phase = 1
 
 def main():
-    mas_for_poincare = np.array([ [None] * (dimension-1) for i in range(int(integrate_time / step / skip_for_phase))])
-    mas_for_points = np.array([ [None] * dimension for i in range(int((integrate_time / step) / skip_for_phase))])
-    
-    print("***********TIME for integrate:", (int(integrate_time / step)))
-    for2dCount = 0
+    # coord_list_for_poincare = np.array([ [None] * (dimension-1) for i in range(int(integrate_time / step / skip_for_phase))], dtype=np.longdouble)
+    # coord_list_for_phase = np.array([ [None] * dimension for i in range(int((integrate_time / step) / skip_for_phase))], dtype=np.longdouble)
+    coord_list_for_poincare = []
+    coord_list_for_phase = []
 
     start = time.time()
     for i in range(int(skip_time / step)):
@@ -31,59 +24,80 @@ def main():
     print("***********END warm time:", time.time() - start)
 
     start = time.time()
-    for i in range(int(integrate_time / step)):
-        last_point = np.copy(initial_point)
-        makeStep(initial_point, dimension, diffFunc, params, step)
-        for2dCount = poincareMap(initial_point, last_point, mas_for_poincare, for2dCount)
-        if i % skip_for_phase == 0:
-            mas_for_points[i // skip_for_phase] = initial_point
-    end = time.time()
-    print("***********TIME:", end-start)
+    for i in range(int(integrate_time/step)):
+        z_last = initial_point[2] - crossection
+        dverkStep(initial_point, dimension, ShimizuX3_3D_flow, params, step)
+        if (initial_point[2] - crossection > 0) and (z_last < 0):
+            H = - params[1] * initial_point[2] + initial_point[0] ** 2
+            dverkStep(initial_point, dimension, ShimizuX3_3D_flow, params, -(initial_point[2] - crossection), H)
+            coord_list_for_poincare.append(list(initial_point[:2]))
+        # coord_list_for_phase.append(list(initial_point))
+    print("***********TIME:", time.time() - start)
 
-    start = time.time()
-    mas_for_points, mas_for_poincare = mas_for_points.T, mas_for_poincare.T
-
-    mas_for_poincare = mas_for_poincare[mas_for_poincare != None]
-    mas_for_points = mas_for_points[mas_for_points != None]
+    # подготовка массивов
+    transpose_list_for_phase = (np.array(coord_list_for_phase, dtype=np.longdouble)).T
+    transpose_points_for_poincare = (np.array(coord_list_for_poincare, dtype=np.longdouble)).T
+    np.save('2dimmaps/'+'a_'+f'{params[0]}'[:6]+'l_'+f'{params[1]}'[:9], transpose_points_for_poincare)
     
-    print(mas_for_poincare)
-    mas_for_poincare = mas_for_poincare.reshape((dimension-1, int(len(mas_for_poincare) / (dimension-1))))
-    mas_for_points = mas_for_points.reshape((dimension, int(len(mas_for_points) / dimension)))
-    print(mas_for_poincare.shape)
-    print("***********FOR NUMPY:", time.time()-start)
+    # отрисовка фазового
+    # fig_phase = plt.figure()
+    # ax_phase = fig_phase.add_subplot(projection='3d')
+    # ax_phase.plot(transpose_list_for_phase[0][::10], transpose_list_for_phase[1][::10], transpose_list_for_phase[2][::10]) # отрисовка фазового портрета
+    # ax_phase.scatter(transpose_points_for_poincare[0], transpose_points_for_poincare[1], crossection, s=5, c="red") # отрисовка точек сечения которые идут для отображения первого возвращения
 
-    ax3Dim.scatter(mas_for_poincare[0], mas_for_poincare[1], s=1, c="black")
-    # меняй индексы в зависимости от переменных
-    if model_type == "map":
-        ax.scatter(mas_for_points[0], mas_for_points[1], mas_for_points[2], s=1, c="black")
-    else:
-        ax.plot(mas_for_points[0], mas_for_points[1], mas_for_points[2], linewidth=0.05)
-
+    # отрисовка сечения
+    fig_poincare, ax_poincare = plt.subplots()
+    ax_poincare.scatter(transpose_points_for_poincare[0], transpose_points_for_poincare[1], s=5, c="black") # отрисовка точек сечения
     plt.show()
 
-# def flowPoincare(state, res, params):  # Lorenz4D
+# def Lorenz_4D_flow(state, res, params):  # Lorenz4D
 #     H = (- params[2] * state[2] + params[3] * state[3] + state[0] * state[1])
 #     res[0] = (params[0] * ( - state[0] + state[1] ) ) / H
 #     res[1] = (state[0] * ( params[1] - state[2] ) - state[1]) / H
 #     res[2] = (- params[2] * state[2] + params[3] * state[3] + state[0] * state[1]) / H
 #     res[3] = (- params[2] * state[3] - params[3] * state[2]) / H
 
-def flowPoincare(state, res, params) -> None:  # ShimizuX3
+def ShimizuX3_3D_flow(state, res, params, H) -> None:
     # Param - alpha lamda B 
-    H = - params[1] * initial_point[2] + initial_point[0] ** 2
     res[0] = state[1] / H
     res[1] = (params[2] * pow ( state[0] , 3.0 ) - params[0] * state[1] - state[0] * state[2] + state[0]) / H
     res[2] = (- params[1] * state[2] + pow ( state[0] , 2.0 )) / H
 
-# менять в зависимости от размерности и переменной
-def poincareMap(point, pre_point, massive, counter):
-    if Lorenz4D_cross(point) > 0 and Lorenz4D_cross(pre_point) < 0:
-        makeStep(point, dimension, flowPoincare, params, -Lorenz4D_cross(point))
-        massive[counter] = [point[0], point[1]] # или добавить еще переменную
-        return counter + 1
-    else:
-        return counter
-
+def dverkStep(val, dimension, diffFunc, params, step, H=1) -> None:
+    k1, k2, k3, k4, k5, k6, k7, k8 = np.zeros(dimension), np.zeros(dimension), np.zeros(dimension), np.zeros(dimension), \
+        np.zeros(dimension), np.zeros(dimension), np.zeros(dimension), np.zeros(dimension)
+    arg = np.zeros(dimension)
+    diffFunc(val, k1, params, H)
+    for j in range(dimension):
+        arg[j] = val[j] + step / 6. * k1[j]
+    
+    diffFunc(arg, k2, params, H)
+    for j in range(dimension):
+        arg[j] = val[j] + step * (4. / 75. * k1[j] + 16. / 75. * k2[j])
+    
+    diffFunc(arg, k3, params, H)
+    for j in range(dimension):
+        arg[j] = val[j] + step * (5. / 6. * k1[j] - 8. / 3. * k2[j] + 5. / 2. * k3[j])
+    
+    diffFunc(arg, k4, params, H)
+    for j in range(dimension):
+        arg[j] = val[j] + step * (-165. / 64. * k1[j] + 55. / 6. * k2[j] - 425. / 64. * k3[j] + 85. / 96. * k4[j])
+    
+    diffFunc(arg, k5, params, H)
+    for j in range(dimension):
+        arg[j] = val[j] + step * (12. / 5. * k1[j] - 8. * k2[j] + 4015. / 612. * k3[j] - 11. / 36. * k4[j] + 88. / 255. * k5[j])
+    
+    diffFunc(arg, k6, params, H)
+    for j in range(dimension):
+        arg[j] = val[j] + step * (-8263. / 15000. * k1[j] + 124. / 75. * k2[j] - 643. / 680. * k3[j] - 81. / 250. * k4[j] + 2484. / 10625. * k5[j])
+    
+    diffFunc(arg, k7, params, H)
+    for j in range(dimension):
+        arg[j] = val[j] + step * (3501. / 1720. * k1[j] - 300. / 43. * k2[j] + 297275. / 52632. * k3[j] - 319. / 2322. * k4[j] + 24068. / 84065. * k5[j] + 3850. / 26703. * k7[j])
+    
+    diffFunc(arg, k8, params, H)
+    for j in range(dimension):
+        val[j] = val[j] + step * (3. / 40. * k1[j] + 875. / 2244. * k3[j] + 23. / 72. * k4[j] + 264. / 1955. * k5[j] + 125. / 11592. * k7[j] + 43. / 616. * k8[j])
 
 if __name__ == "__main__":
     main()

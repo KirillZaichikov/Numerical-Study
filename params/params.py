@@ -12,7 +12,7 @@ model_type = 'flow'
 # params = np.array([-0.1, 5.1, 0])
 # params = np.array([1.371672077922078, 0.43540322580645163, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 0
 # params = np.array([1.3819673427222132, 0.4355835067637877, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 1
-params = np.array([1.0515918181818182, 0.6013812096774193, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 2
+params = np.array([0.68, 0.61, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 2
 # params = np.array([1.0501456818181818, 0.6030381935483871, 0.2]) # alpha lamda B for Shimizu3X
 diffFunc = ShimizuX3_3D_flow
 diffFuncVarF = None # или None

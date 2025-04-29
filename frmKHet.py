@@ -1,13 +1,14 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import time
-import distinctipy
+# import distinctipy
+import math as m
 
-mu = np.linspace(0, 0.2, 500)
-nu = np.linspace(0.9, 1, 500)
+mu = np.linspace(0, 0.2, 1000)
+nu = np.linspace(0.9, 1, 1000)
 A = 0.978768
 x_ = 0.0
-calc_time = 500
+calc_time = 1000
 fig, ax = plt.subplots(figsize=(8, 8))
 ax.set_xlim(nu[0], nu[-1])
 ax.set_ylim(mu[0], mu[-1])
@@ -24,6 +25,7 @@ for i, par1 in enumerate(nu):
         times = 1
         x_=0 # занулять здесь?
         counter = 0
+        lyap=0
         while True:
             tmp_line=''
             x_=0 # занулять здесь?
@@ -31,6 +33,7 @@ for i, par1 in enumerate(nu):
                 x_old = x_
                 for count in range(times):
                     x_ = map(x_, par2, par1)
+                    lyap+=m.log(par1*A*abs(x_)**(par1-1))
                 if x_ - x_old > 0:
                     tmp_line += '1'
                 else:
@@ -38,6 +41,8 @@ for i, par1 in enumerate(nu):
             if (tmp_line != example_line1 and tmp_line != example_line2) or times > 1024:
                 x.append(par1)
                 y.append(par2)
+                if lyap<0:
+                    counter = 20
                 categories.append(counter)
                 break
             else:
@@ -69,7 +74,8 @@ colormap = np.array([(0.29703107260951633, 0.2957743936235912, 0.927297441689482
                      (0.3061949467333815, 0.639765467265412, 0.9846404555922371), (0.29054476098665255, 0.6065480673108111, 0.5389376170300988), 
                      (0.9997096455531786, 0.6980911124599046, 0.554805744120247), (0.6916324488545669, 0.4560221933703202, 0.9618466866261876), 
                      (0.3518161059842052, 0.8591562321968021, 0.6775081421518184), (0.6399608892687929, 0.8845942056981821, 0.9837447207260359), 
-                     (0.3009723020629114, 0.29370718586430605, 0.5923007494767217), (0.6392564675766446, 0.991849494721768, 0.32537849789849593)])
+                     (0.3009723020629114, 0.29370718586430605, 0.5923007494767217), (0.6392564675766446, 0.991849494721768, 0.32537849789849593),
+                     (1,1,1)]) # for fix point
 
-ax.scatter(x, y, c=colormap[categories], s=0.5)
+ax.scatter(x, y, c=colormap[categories], s=0.1)
 plt.show()

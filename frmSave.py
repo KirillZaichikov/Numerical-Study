@@ -59,19 +59,22 @@ params = np.array([1.04200000,0.59800000, 0.2], dtype=np.longdouble) # alpha lam
 params = np.array([1.364,0.459, 0.2], dtype=np.longdouble) # alpha lamda ФИНАЛЬНАЯ ОЦЕНКА ВОЗЛЕ ПЕРВОГО КРИТЕРИЯ Лакуна 2
 params = np.array([1.045,0.588, 0.2], dtype=np.longdouble) # alpha lamda ФИНАЛЬНАЯ ОЦЕНКА ВОЗЛЕ ВТОРОГО КРИТЕРИЯ Лакуна 4
 params = np.array([1.049, 0.5961, 0.2], dtype=np.longdouble) # alpha lamda ФИНАЛЬНАЯ ОЦЕНКА ВОЗЛЕ ВТОРОГО КРИТЕРИЯ Лакуна 8
-params = np.array([1.351, 0.48, 0.2], dtype=np.longdouble) # alpha lamda ФИНАЛЬНАЯ ОЦЕНКА ВОЗЛЕ ПЕРВОГО КРИТЕРИЯ Лакуна 4
 params = np.array([1.06, 0.5925, 0.2], dtype=np.longdouble) # точка 2 Лакуна 8 A = 0.94
 params = np.array([1.058, 0.594, 0.2], dtype=np.longdouble) # точка 2 Лакуна 16 A = 0.95
 params = np.array([1.053, 0.599, 0.2], dtype=np.longdouble) # точка 2 Лакуна 32 A = 0.9
 params = np.array([1.05, 0.6015, 0.2], dtype=np.longdouble) # точка 2 Лакуна 32 A = 0.978768
-params = np.array([1.044, 0.605, 0.2], dtype=np.longdouble) # точка 3 Лакуна 256 A = 1.0176
 params = np.array([1.04475, 0.60575, 0.2], dtype=np.longdouble) # точка 3 Лакуна 256 A = 1.0176
+params = np.array([1.04475, 0.6057, 0.2], dtype=np.longdouble) # точка 3 Лакуна 256 A = 1.002
+params = np.array([1.351, 0.48, 0.2], dtype=np.longdouble) # alpha lamda ФИНАЛЬНАЯ ОЦЕНКА ВОЗЛЕ ПЕРВОГО КРИТЕРИЯ Лакуна 4
+params = np.array([0.74221, 0.63016, 0.2], dtype=np.longdouble) # Счетное
+params = np.array([0.697, 0.61, 0.2], dtype=np.longdouble) 
+params = np.array([1.044, 0.605, 0.2], dtype=np.longdouble) # точка 3 Лакуна 64 A = 1.0176
 iter_param = 4
 initial_point = np.array([0.0000001, 0, 0], dtype=np.longdouble)
 skip_time = 0
 time = 400000
-skip_phase = 10
-step = 0.001
+skip_phase = 5
+step = 0.01
 dimension = 3
 coord_list_for_frm = []
 coord_list_for_poincare = []
@@ -98,8 +101,8 @@ for i in range(int(time/step)):
             iter_count = 0
             coord_list_for_frm.append(list(initial_point[:3]))
         coord_list_for_poincare.append(list(initial_point[:2]))
-    if i % skip_phase == 0:
-        coord_list_for_phase.append(list(initial_point))
+    # if i % skip_phase == 0:
+    #     coord_list_for_phase.append(list(initial_point))
 
 # отрисовка фазового
 transpose_list1 = (np.array(coord_list_for_phase, dtype=np.longdouble)).T
@@ -107,7 +110,7 @@ transpose_points_for_frm = (np.array(coord_list_for_frm, dtype=np.longdouble)).T
 transpose_points_for_poincare = (np.array(coord_list_for_poincare, dtype=np.longdouble)).T
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(projection='3d')
-ax1.plot(transpose_list1[0], transpose_list1[1], transpose_list1[2]) # отрисовка фазового портрета
+# ax1.plot(transpose_list1[0], transpose_list1[1], transpose_list1[2]) # отрисовка фазового портрета
 ax1.scatter(transpose_points_for_frm[0], transpose_points_for_frm[1], transpose_points_for_frm[2], s=5, c="red") # отрисовка точек сечения которые идут для отображения первого возвращения
 np.save('2dimmaps/'+'a_'+f'{params[0]}'[:6]+'l_'+f'{params[1]}'[:9], transpose_points_for_poincare)
 

@@ -112,6 +112,13 @@ def draw_continuity_cloud(axCU, axSS, skip, points, vectors_ss, vectors_cu, poin
     print(len(dist), len(angles))
     axCU.scatter(dist, angles, c='#1F77B4', s=0.05)
 
+    axSS.plot([eps, eps], [0, np.pi], c="red")
+    axSS.set_xlim(0, max(dist))
+    axSS.set_ylim(0, np.pi)
+    axCU.plot([eps, eps], [0, np.pi], c="red")
+    axCU.set_xlim(0, max(dist))
+    axCU.set_ylim(0, np.pi)
+
 
 num = 1
 min_ang = 10

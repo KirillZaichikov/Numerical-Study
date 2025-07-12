@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import time
-import distinctipy
+# import distinctipy
 import colors.colors as clrs
 
 mu = np.linspace(0, 1, 500)
-A = 0.978768
+A = 0.5305
+C = 1.3
 nu = np.linspace(0.5, 1, 500)
 # times = 1
 x_ = 0.0
@@ -16,6 +17,9 @@ ax.set_ylim(mu[0], mu[-1])
 
 def map(x, mu, nu):
     return -mu+A*abs(x)**nu
+
+def map(x, mu, nu):
+    return abs(-mu+A*abs(x)**nu+C*(abs(x)**(2*nu)))
 
 lines = [''] * len(mu) * len(nu)
 for i, par1 in enumerate(nu):

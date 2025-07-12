@@ -1,14 +1,17 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import math as m
 
-mu_ = np.linspace(-2, 0, 1500)#0.104
-A_ = np.linspace(-4, 0, 1500)
+LYAP_TRES = 0.001
+DERI_TRES = 0.005
+
+mu_ = np.linspace(-0.3, 2.7, 500)#0.104
+A_ = np.linspace(-1.25, 1.15, 500)
 C_ = 1.3
 nu_ = 0.8#0.964
-skip_time = 0
-time = 10
+time = 1000
 times = 1
-skip_time = 0
+skip_time = 200
 x_ = 0.0
 lx, ly = [], []
 
@@ -21,7 +24,7 @@ def map_der(x, A, C, nu, mu):
     else:
         return -(A*nu * x **(nu-1) + 2 * nu * C * x ** (2*nu-1))
     
-points_pos = []
+points_ph = []
 points_neg = []
 points_nan = []
 points_cvasi = []
@@ -29,6 +32,7 @@ for A in A_:
     print('one line is ready')
     for mu in mu_:
         # print(A, mu)
+        lyap = 0
         x_ = 0
         min_deriv = 100
         cvasi = False
@@ -37,34 +41,37 @@ for A in A_:
         for j in range(time):
             x_ = map(x_, A, C_, nu_, mu)
             deriv = map_der(x_, A, C_, nu_, mu)
+            try:
+                if type(lyap) is not str:
+                    lyap += m.log(deriv)
+            except ValueError:
+                lyap = 'inf'
             
-            # if abs(deriv) < min_deriv and time > 100:
-            #     cvasi = True
-            #     min_deriv = abs(deriv)
             if abs(deriv) < min_deriv:
                 min_deriv = abs(deriv)
-        # if cvasi:
-        #     points_cvasi.append([A, mu])
-        if min_deriv > 0.008:
-            points_pos.append([A, mu])
-        elif min_deriv == 'inf':
+
+        if min_deriv == 'inf' or lyap=='inf':
             points_nan.append([A, mu])
-        else:
-            # print(deriv, A, mu)
+        elif min_deriv > DERI_TRES and lyap>LYAP_TRES:
+            points_ph.append([A, mu])
+        elif min_deriv < DERI_TRES and lyap>LYAP_TRES:
+            points_cvasi.append([A, mu])
+        elif lyap < LYAP_TRES:
             points_neg.append([A, mu])
 
-pos = np.array(points_pos).T
+ph = np.array(points_ph).T
 neg = np.array(points_neg).T
 nan = np.array(points_nan).T
-# cva = np.array(points_cvasi).T
+cva = np.array(points_cvasi).T
 
 fig, ax = plt.subplots(figsize=(8, 8))
 ax.set_xlim(mu_[0],mu_[-1])
 ax.set_ylim(A_[0],A_[-1])
 
-# ax.scatter(pos[1], pos[0], s=0.1, c='white')
-# ax.scatter(cva[1], cva[0], s=0.05, c='blue')
-ax.scatter(neg[1], neg[0], s=0.1, c='black')
+ax.scatter(neg[1], neg[0], s=0.1, c='white')
+if len(points_cvasi) != 0:
+    ax.scatter(cva[1], cva[0], s=0.05, c='blue')
+ax.scatter(ph[1], ph[0], s=0.1, c='orange')
 if len(points_nan) != 0:
     ax.scatter(nan[1], nan[0], s=0.1, c='gray')
 plt.show()

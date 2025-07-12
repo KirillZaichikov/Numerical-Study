@@ -1,28 +1,15 @@
-import matplotlib.pyplot as plt
-from utils.integrator import dverkStep
-import numpy as np
-import distinctipy
+import math as m
 
-z = np.linspace(0, 0.2, 100)
-wl = []
-for i, zp in enumerate(z):
-    eps = -2 * zp
-    # print(i)
-    if len(z)/2:
-        step = ((eps) * 2)/25
-        colvo = 25
-    else:
-        step = ((eps) * 2)/50
-        colvo = 50
-    print(eps, step)
-    wl.append([])
-    for j in range(colvo):
-        wl[i].append(-eps + step*j)
+A0 = -1.73818
+mu0 = -0.58034
+alpha = -m.pi/6
 
-fig, ax = plt.subplots()
 
-for xl in wl:
-    for x in xl:
-        ax.plot(xl, [z[wl.index(xl)]]*len(xl), c='black')
+def f(A, mu):
+    new_mu = m.cos(alpha)*(mu-mu0) - m.sin(alpha)*(A-A0) + mu0
+    new_A = m.sin(alpha)*(mu-mu0) + m.cos(alpha)*(A-A0) + A0
+    return new_mu, new_A
 
-plt.show()
+A = -2.5
+mu = -1
+print(f(A,mu))

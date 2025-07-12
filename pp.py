@@ -41,7 +41,7 @@ def main(start_point):
     if model_type == "map":
         ax.scatter(mas_for_points[0], mas_for_points[1], mas_for_points[2], s=1, c="black")
     else:
-        ax.plot(mas_for_points[0], mas_for_points[1], mas_for_points[2], linewidth=0.2)
+        ax.plot(mas_for_points[0], mas_for_points[1], mas_for_points[2], linewidth=0.3)
 
 
 if __name__ == "__main__":

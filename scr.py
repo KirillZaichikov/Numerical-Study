@@ -2,11 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-mu = 0.09#0.104
-A = -0.8
-C = 1.3
-nu = 0.8#0.964
-time = 20000
+mu = 1#0.104
+A = 0.2
+C = 1.5
+nu = 0.5#0.964
+time = 10000
 times = 1
 skip_time = 0
 x_ = 0.0
@@ -31,7 +31,7 @@ fig, ax = plt.subplots()
 mas_fx = np.linspace(0., 0.8, 3000)
 
 mas_fy = -mu+A*abs(mas_fx)**nu
-ax.plot(mas_fx, mas_fy, c='magenta')
+# ax.plot(mas_fx, mas_fy, c='magenta')
 
 mas_fy = -mu+A*abs(-mu+A*abs(mas_fx)**nu)**nu
 # ax.plot(mas_fx, mas_fy, c='green')

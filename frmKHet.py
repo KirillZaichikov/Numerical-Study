@@ -5,9 +5,9 @@ import time
 # import distinctipy
 import math as m
 
-mu = np.linspace(0, 0.2, 1000)
-nu = np.linspace(0.9, 1, 1000)
-A = 0.978768
+mu = np.linspace(0, 0.1, 1000)
+nu = np.linspace(1, 1.1, 1000)
+A = 1.5
 x_ = 0.0
 calc_time = 500
 fig, ax = plt.subplots(figsize=(8, 8))
@@ -19,6 +19,7 @@ def map(x, mu, nu):
 
 def map_var(x, nu, x_old):
     return A*abs(x)**(nu-1)
+
 x, y, categories= [], [], []
 example_line1 = '01'*int(calc_time / 2)
 example_line2 = '10'*int(calc_time / 2)
@@ -36,7 +37,10 @@ for i, par1 in enumerate(nu):
                 x_old = x_
                 for count in range(times):
                     x_ = map(x_, par2, par1)
-                    lyap += m.log(par1*A*abs(x_)**(par1-1))
+                    try:
+                        lyap += m.log(par1*A*(abs(x_))**(par1-1))
+                    except ValueError:
+                        pass
                 if x_ - x_old > 0:
                     tmp_line += '1'
                 else:
@@ -81,5 +85,5 @@ colormap = np.array([(0.29703107260951633, 0.2957743936235912, 0.927297441689482
                      (0.3009723020629114, 0.29370718586430605, 0.5923007494767217), (0.6392564675766446, 0.991849494721768, 0.32537849789849593),
                      (1,1,1)]) # for fix point
 
-ax.scatter(x, y, c=colormap[categories], s=0.1)
+ax.scatter(x, y, c=colormap[categories], s=0.08)
 plt.show()

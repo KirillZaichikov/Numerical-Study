@@ -1,28 +1,17 @@
 import matplotlib.pyplot as plt
-from utils.integrator import dverkStep
 import numpy as np
-import distinctipy
 
-z = np.linspace(0, 0.2, 100)
-wl = []
-for i, zp in enumerate(z):
-    eps = -2 * zp
-    # print(i)
-    if len(z)/2:
-        step = ((eps) * 2)/25
-        colvo = 25
-    else:
-        step = ((eps) * 2)/50
-        colvo = 50
-    print(eps, step)
-    wl.append([])
-    for j in range(colvo):
-        wl[i].append(-eps + step*j)
+fig, ax1 = plt.subplots()
 
-fig, ax = plt.subplots()
+x = np.linspace(0, 100)
+y1 = np.sin(x)
+y2 = np.sqrt(x)
 
-for xl in wl:
-    for x in xl:
-        ax.plot(xl, [z[wl.index(xl)]]*len(xl), c='black')
+ax1.plot(x, y1)
+ax1.set_xlabel("x (основная)")
+
+ax2 = ax1.twiny()
+ax2.set_xlabel("x (вторая)")
+ax2.plot(x, y2)  # накладывается по x
 
 plt.show()

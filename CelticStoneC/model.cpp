@@ -1,5 +1,5 @@
 #include <cmath>
-// #include "linal.cpp"
+#include "linal.cpp"
 
 void calc_vector_r(double* r, const double* state, const double* params) {
     // Вычисление вектора r
@@ -79,15 +79,20 @@ void CelticStone_6D_flow(const double* state, double* res, const double* params)
     gamma[2] = state[5];
     double dr[3], dM[3], dgamma[3];
 
+    // Нормировка gamma
+    // double gamma_norm = sqrt(gamma[0]*gamma[0]+gamma[1]*gamma[1]+gamma[2]*gamma[2]);
+    // for (int i=0;i<3;i++)
+    //     gamma[i] = gamma[i] / gamma_norm;
+
     // Вычисление вектора r
     r[0] = -params[4] * gamma[0] / gamma[2];
     r[1] = -params[5] * gamma[1] / gamma[2];
     r[2] = -params[6] + (params[4] * pow(gamma[0], 0.2e1) + params[5] * pow(gamma[1], 0.2e1)) * pow(gamma[2], -0.2e1) / 0.2e1;
     // std::cout << "vector r " << r[0] << " " << r[1] << " " << r[2] << std::endl;
 
-    r1 = r[0];
-    r2 = r[1];
-    r3 = r[2];
+    // r1 = r[0];
+    // r2 = r[1];
+    // r3 = r[2];
     // матрица М от омега
     JQ_kuz[0][0] = pow(cos(delta), 0.2e1) * J[0] + pow(sin(delta), 0.2e1) * J[1] + pow(r[1], 0.2e1) + pow(r[2], 0.2e1);
     JQ_kuz[0][1] = -cos(delta) * J[0] * sin(delta) + sin(delta) * J[1] * cos(delta) - r[0] * r[1];
@@ -118,14 +123,15 @@ void CelticStone_6D_flow(const double* state, double* res, const double* params)
     omega[2] = JQ_rev[2][0] * M[0] + JQ_rev[2][1] * M[1] + JQ_rev[2][2] * M[2];
     // std::cout << "vector omega " << omega[0] << " " << omega[1] << " " << omega[2] << std::endl;
 
-    tmp[0] = M[0];
-    tmp[1] = M[1];
-    tmp[2] = M[2];
-    tmp[3] = gamma[0];
-    tmp[4] = gamma[1];
-    tmp[5] = gamma[2];
-    for (int k = 0; k < 3; k++)
-        M[k] = tmp[k] * pow((2 * (params[7] + params[8] * (r[0] * gamma[0] + r[1] * gamma[1] + r[2] * gamma[2])) / (tmp[0] * omega[0] + tmp[1] * omega[1] + tmp[2] * omega[2])), 0.5);
+    // НОРМИРОВКА ЭНЕРГИИ
+    // tmp[0] = M[0];
+    // tmp[1] = M[1];
+    // tmp[2] = M[2];
+    // tmp[3] = gamma[0];
+    // tmp[4] = gamma[1];
+    // tmp[5] = gamma[2];
+    // for (int k = 0; k < 3; k++)
+    //     M[k] = tmp[k] * pow((2 * (params[7] + params[8] * (r[0] * gamma[0] + r[1] * gamma[1] + r[2] * gamma[2])) / (tmp[0] * omega[0] + tmp[1] * omega[1] + tmp[2] * omega[2])), 0.5);
 
 
     // Посчитали вектор dgamma

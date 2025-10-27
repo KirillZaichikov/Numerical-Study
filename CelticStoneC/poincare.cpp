@@ -42,12 +42,12 @@ void copyMas(double* a, double* b){
 
 int main(){
     void (*diffFunc)(const double*, double*, const double*) {CelticStone_6D_flow};
+    void (*diffFuncP)(const double*, double*, const double*) {CelticStone_6D_flow_poincare};
     double projSum[6], arg[6];
     for (int i=0;i<6;i++)
-        projSum[i]=0;
+    projSum[i]=0;
     double k1[6], k2[6], k3[6], k4[6], k5[6], k6[6], k7[6], k8[6];
     
-
     // double M[] = {176.39671645238903,
     //             -168.85257112196294,
     //             -94.877918535603939};
@@ -55,16 +55,16 @@ int main(){
     //                 -0.40429993079272591, 
     //                 0.59428864887075838}; // Поставил минус
     // Протянул к рождению аттрактора
-    double M[] = {-54.06849765, -41.5933255,   76.16298962};
-    double gamma[] = {0.26638367, 0.20492122, 0.94183174}; // Тут минус уже не надо
-
+    double M[] = {-60.2209802043, -30.3922304073,  62.5600551539};
+    double gamma[] = {0.3085337300, 0.1557103963, 0.9383822539}; // Тут минус уже не надо
     double tmp[6];
     
     const double step = 0.0025;
-    const int time = 2000;
+    const int iterSkip = 0;
+    const int iterNum = 1;
     const int dimension = 6;
 
-    double params[] = {0.423, 2, 6, 7, 9, 4, 1, 744, 100};
+    double params[] = {0.485, 2, 6, 7, 9, 4, 1, 752, 100};
     double delta = params[0];
     
     // Q @ M
@@ -91,8 +91,8 @@ int main(){
     
     // ТУТ ДЕЛАЕТСЯ ПРИВЕДЕНИЕ К УРОВНЮ ЭНЕРГИИ ЕСЛИ НАДО
     // Вектора вычисляются верно
-    // calc_vector_r(r,mainTrajectory,params);
-    // calc_vector_omega(r,omega,mainTrajectory,params);
+    calc_vector_r(r,mainTrajectory,params);
+    calc_vector_omega(r,omega,mainTrajectory,params);
     // tmp[0] = mainTrajectory[0];
     // tmp[1] = mainTrajectory[1];
     // tmp[2] = mainTrajectory[2];
@@ -111,36 +111,43 @@ int main(){
     calc_vector_omega(r,omega,mainTrajectory,params);
     check_geom_integral(gamma);
     check_energy_integral(M, gamma, r, omega, params[7], params[8]);
-<<<<<<< HEAD
-    
-    double step = 0.0025;
-    int iterSkip = 50000;
-    int iterNum = 5000;
-    int dimension = 6;
-=======
 
->>>>>>> 6a93a972f79559d189a0a4cfac72198c51d67a95
     double old_ps;
     double new_ps, H;
+    double count =0;
+    double iteration=0;
+    double result_time = 0;
     double mainCopy[6];
-    std::vector<std::vector<double>> matrix(time/step, std::vector<double>(dimension));
+    std::vector<std::vector<double>> matrix(iterNum+1, std::vector<double>(dimension));
 
-    for (double t=0;t<time;t+=step)
+    for (int i=0;i<dimension;i++)
+        matrix[count][i] = mainTrajectory[i];
+    while (count < iterNum){
+        old_ps = mainTrajectory[1] * mainTrajectory[3] - mainTrajectory[0] * mainTrajectory[4];
         dverkStep(mainTrajectory, dimension, diffFunc, params, step, arg, k1, k2, k3, k4, k5, k6, k7, k8);
+        result_time = result_time + step;
 
-    copyMas(mainCopy, mainTrajectory);
+        new_ps = mainTrajectory[1] * mainTrajectory[3] - mainTrajectory[0] * mainTrajectory[4];
+        if ((new_ps < 0) and (old_ps > 0)){
+            copyMas(mainCopy, mainTrajectory);
+            dverkStep(mainCopy, dimension, diffFuncP, params, -new_ps, arg, k1, k2, k3, k4, k5, k6, k7, k8);
+            // std::cout<<mainCopy[1] * mainCopy[3] - mainCopy[0] * mainCopy[4]<<std::endl;
+            if (iterSkip < iteration) {
+                for (int i=0;i<dimension;i++)
+                    matrix[count+1][i] = mainCopy[i];
+                count++;
+            }
+            // std::cout << mainCopy[0] << " " << mainCopy[1] << " " <<mainCopy[2] << " " << mainCopy[3]<< " " <<mainCopy[4] << " " << mainCopy[5] << std::endl;
+            iteration++;
+            // std::cout << mainCopy[3] << " " << mainCopy[4] << std::endl;
+        }
+    }
     std::cout << "LAST POINT" << std::endl;
     std::cout << mainCopy[0] << " " << mainCopy[1] << " " <<mainCopy[2] << " " << mainCopy[3]<< " " <<mainCopy[4] << " " << mainCopy[5] << std::endl;
+    std::cout << result_time << std::endl;
 
-    const int intervals = 500;
-    const double param_step = (0.485 -0.423) / intervals;
-    params[0] = params[0]+param_step;
     calc_vector_r(r,mainTrajectory,params);
-    std::cout << "R" << std::endl;
-    std::cout << r[0] << " " << r[1] << " " <<r[2] << std::endl;
     calc_vector_omega(r,omega,mainTrajectory,params);
-    std::cout << "omega" << std::endl;
-    std::cout << omega[0] << " " << omega[1] << " " << omega[2] << std::endl;
 
     M[0] = mainTrajectory[0];
     M[1] = mainTrajectory[1];
@@ -150,15 +157,6 @@ int main(){
     gamma[2] = mainTrajectory[5];
     check_energy_integral(M, gamma, r, omega, params[7], params[8]);
     check_geom_integral(gamma);
-
-    tmp[0] = M[0];
-    tmp[1] = M[1];
-    tmp[2] = M[2];
-    tmp[3] = gamma[0];
-    tmp[4] = gamma[1];
-    tmp[5] = gamma[2];
-    std::cout << "NORM COEF "<< pow((2 * (params[7] + params[8] * (r[0] * gamma[0] + r[1] * gamma[1] + r[2] * gamma[2])) / (tmp[0] * omega[0] + tmp[1] * omega[1] + tmp[2] * omega[2])), 0.5) << std::endl;
-
 
     // Вывод в файл
     std::ofstream fout("matrix.txt");

@@ -9,6 +9,11 @@
 #include "model.cpp"
 #include <iostream>
 
+/*
+    Этот код исправно считает ляпуновские показатели в прямом времени
+    В обратном показатели странные
+*/
+
 
 void check_geom_integral(double* gamma){
     double a = pow(gamma[0], 2)+pow(gamma[1], 2)+pow(gamma[2], 2);
@@ -43,23 +48,21 @@ int main(){
     double tmp[6];
 
     // Начальная точка в хаосовских координатах
-    double M[] = {176.39671645238903,
-                  -168.85257112196294,
-                  -94.877918535603939};
-    double gamma[] = {-0.69524430378189617,
-                      -0.40429993079272591, 
-                      0.59428864887075838}; // Поставил мину
+    double M[] = {-59.70209864, -40.90167698,  62.21294067};
+    double gamma[] = {0.27785914, 0.19036022, 0.94157171}; // Поставил мину
 
-    double step = 0.001;
+    double step = 0.0025;
     double timeSkip = 0;
     double timeSkipClP = 100;
     double calcTime = 200;
     int dimension = 6;
     int expsNum = 6;
     int essDim = 1;
-    double eps = 0.001;
+    double eps = 1e-7;
     int samplesNum = 1;
-    double params[] = {0.462, 2, 6, 7, 9, 4, 1, 739.5, 100};
+
+    double params[] = {0.4892, 2, 6, 7, 9, 4, 1, 752, 100};
+
 
     size_t ncu_dots_cnt = (size_t) (calcTime / samplesNum / step);
     size_t traj_dots_cnt = (size_t) ((calcTime / samplesNum + timeSkipClP) / step);
@@ -68,17 +71,17 @@ int main(){
     double delta = params[0];
     // 77.3333, -231.617, -94.8779, -0.803553, -0.0335453, 0.594289
     // Q @ M
-    mainTrajectory[0] = cos(delta) * M[0] + sin(delta) * M[1];
-    mainTrajectory[1] = -sin(delta) * M[0] + cos(delta) * M[1];
-    mainTrajectory[2] = M[2];
-    // Q @ gamma
-    mainTrajectory[3] = cos(delta) * gamma[0] + sin(delta) * gamma[1];
-    mainTrajectory[4] = -sin(delta) * gamma[0] + cos(delta) * gamma[1];
-    mainTrajectory[5] = gamma[2];
+    // mainTrajectory[0] = cos(delta) * M[0] + sin(delta) * M[1];
+    // mainTrajectory[1] = -sin(delta) * M[0] + cos(delta) * M[1];
+    // mainTrajectory[2] = M[2];
+    // // Q @ gamma
+    // mainTrajectory[3] = cos(delta) * gamma[0] + sin(delta) * gamma[1];
+    // mainTrajectory[4] = -sin(delta) * gamma[0] + cos(delta) * gamma[1];
+    // mainTrajectory[5] = gamma[2];
 
-    gamma[0] = mainTrajectory[3];
-    gamma[1] = mainTrajectory[4];
-    gamma[2] = mainTrajectory[5];
+    // gamma[0] = mainTrajectory[3];
+    // gamma[1] = mainTrajectory[4];
+    // gamma[2] = mainTrajectory[5];
 
     double* ncu_s = (double*)malloc(ncu_dots_cnt * dimension * essDim * sizeof(double));
     double* traj_dots = (double*)malloc(traj_dots_cnt * dimension * sizeof(double));
@@ -87,20 +90,23 @@ int main(){
     calc_vector_r(r,mainTrajectory,params);
     calc_vector_omega(r,omega,mainTrajectory,params);
     
-    tmp[0] = mainTrajectory[0];
-    tmp[1] = mainTrajectory[1];
-    tmp[2] = mainTrajectory[2];
-    tmp[3] = mainTrajectory[3];
-    tmp[4] = mainTrajectory[4];
-    tmp[5] = mainTrajectory[5];
+    // tmp[0] = mainTrajectory[0];
+    // tmp[1] = mainTrajectory[1];
+    // tmp[2] = mainTrajectory[2];
+    // tmp[3] = mainTrajectory[3];
+    // tmp[4] = mainTrajectory[4];
+    // tmp[5] = mainTrajectory[5];
     
-    for (int k = 0; k < 3; k++){
-        M[k] = tmp[k] * pow(2 * (params[7] + params[8] * (r[0] * gamma[0] + r[1] * gamma[1] + r[2] * gamma[2])) 
-        / (tmp[0] * omega[0] + tmp[1] * omega[1] + tmp[2] * omega[2]), 0.5);
-    }
+    // for (int k = 0; k < 3; k++){
+    //     M[k] = tmp[k] * pow(2 * (params[7] + params[8] * (r[0] * gamma[0] + r[1] * gamma[1] + r[2] * gamma[2])) 
+    //     / (tmp[0] * omega[0] + tmp[1] * omega[1] + tmp[2] * omega[2]), 0.5);
+    // }
     mainTrajectory[0] = M[0];
     mainTrajectory[1] = M[1];
     mainTrajectory[2] = M[2];
+    mainTrajectory[3] = gamma[0];
+    mainTrajectory[4] = gamma[1];
+    mainTrajectory[5] = gamma[2];
 
     calc_vector_r(r,mainTrajectory,params);
     calc_vector_omega(r,omega,mainTrajectory,params);
@@ -142,31 +148,19 @@ int main(){
     }std::cout<<"****forward warm end"<<std::endl;
 
     //////////////////////////////////////////////////////////
-    // std::cout << "main" << std::endl;
-    // for (int32_t j = 0; j < dimension; j++)
-    //     std::cout << mainTrajectory[j] << " "<< std::endl;
-    // std::cout << std::endl;
-
     for (int i = 0; i < expsNum; i++)
         for (int j = 0; j < dimension; j++)
             slaveTrajectories[i * dimension + j] -= mainTrajectory[j];
 
-    // // std::cout << "vectors" << std::endl;
-    // // for (int32_t i = 0; i < expsNum; i++){
-    // //     for (int32_t j = 0; j < dimension; j++)
-    // //         std::cout << slaveTrajectories[i*dimension+j] << " ";
-    // //     std::cout << std::endl;}
-
     for (int i = 0; i < expsNum; i++)
         for (int j = 0; j < dimension; j++)
             slaveTrajectories[i * dimension + j] += mainTrajectory[j];
-    ///////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////
 
     // Считаем в прямом времени
     int stepCount = 0;
     for (double t = 0; t < calcTime; t += step) {
         dverkStep(mainTrajectory, dimension, diffFunc, params, step, arg, k1, k2, k3, k4, k5, k6, k7, k8);
-        // std::cout<<stepCount<<std::endl;
         
         for (int32_t i = 0; i < expsNum; i++){
             dverkStep(&slaveTrajectories[i * dimension], dimension, diffFunc, params, step, arg, k1, k2, k3, k4, k5, k6, k7, k8);
@@ -204,8 +198,9 @@ int main(){
     memset(slaveTrajBw, 0., dimension * expsNum * sizeof(double));
 
     for (int i = 0; i < expsNum; i++){
-        for (int j = 0; j < dimension; j++)
+        for (int j = 0; j < dimension; j++){
             slaveTrajBw[i * dimension + j] += (traj_dots + (stepCount-1) * dimension)[j];
+            std::cout<<(traj_dots + (stepCount-1) * dimension)[j]<<std::endl;}
         slaveTrajBw[i * dimension + i] += eps;
     }
 
@@ -214,8 +209,10 @@ int main(){
         stepCount--;
         for (int i = 0; i < expsNum; i++) {
             dverkStep(&slaveTrajBw[i * dimension], dimension, diffFunc, params, -step, arg, k1, k2, k3, k4, k5, k6, k7, k8);
-            for (int32_t j = 0; j < dimension; j++)
+            for (int32_t j = 0; j < dimension; j++){
                 slaveTrajBw[i * dimension + j] -= (traj_dots + stepCount * dimension)[j];
+                //std::cout<<slaveTrajBw[i * dimension + j]<<std::endl;
+            }
         }
         
         

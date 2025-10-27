@@ -1,7 +1,29 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-omega_y = []
+# Начальная точка из хаоса
+# M = np.array([-34.697048094358898, -62.831273385025732, 62.2309106274670827])
+# gamma = np.array([-0.16059001362453112, -0.29080499936213250, -0.94320904356884894])
+# M = np.array([176.39671645238903, -168.85257112196294, -94.877918535603939])
+# gamma = np.array([0.69524430378189617, 0.40429993079272591, -0.59428864887075838])
+# это я протянул почти к рождению УЖЕ ПОВЕРНУТЫЕ!!!
+M = np.array([-59.79105323, -40.95557389,  61.6906867]) 
+gamma = np.array([0.27751469, 0.19009154, 0.94172756])
+# gamma = -gamma
+
+time_skip = 0
+time = 100
+step = 0.0025
+# Параметры из хаоса
+#         d     I1 I2 I3 a1 a2  h   E    g0
+# params = [0.489, 2, 6, 7, 9, 4, 1, 752, 100] 
+params = [0.433, 2, 6, 7, 9, 4, 1, 740, 100] 
+# params = [0.2  , 5, 6, 7, 9, 4, 1, 555, 100]
+d = params[0]
+I1, I2, I3 = params[1], params[2], params[3]
+a1, a2 = params[4], params[5]
+h, E, g0 = params[6], params[7], params[8]
+
 
 def calc_r_vec(a1, a2, h, gamma, d):
     gamma1, gamma2, gamma3 = gamma[0], gamma[1], gamma[2]
@@ -106,62 +128,44 @@ def dverkStep(val, dimension, diffFunc, params, step, H=1) -> None:
     for j in range(dimension):
         val[j] = val[j] + step * (3. / 40. * k1[j] + 875. / 2244. * k3[j] + 23. / 72. * k4[j] + 264. / 1955. * k5[j] + 125. / 11592. * k7[j] + 43. / 616. * k8[j])
 
+def calcIntegrals(M, g0, gamma):
+    r = calc_r_vec(a1, a2, h, gamma, d)
+    omega = calc_omega(d, I1, I2, I3, a1, a2, h, E, g0, r, gamma, M)
+    print("(calcIntegrals) r", r, "omega", omega)
+    return (1/2) * np.dot(M, omega) - g0 * np.dot(r, gamma), np.dot(gamma, gamma)
 
 if __name__ == "__main__":
     x1, x2 = [], []
+    # Замена начальных условий из хаоса на значения кузнецова (ЕСЛИ НАДО!!!)
+    # QK = np.array([[np.cos(-d), np.sin(-d), 0],
+    #              [-np.sin(-d),np.cos(-d),0],
+    #              [0,0,1]])
+    # QC = np.array([[np.cos(d), np.sin(d), 0],
+    #              [-np.sin(d),np.cos(d),0],
+    #              [0,0,1]])
+    # M = QC @ M
+    # gamma = QC @ gamma
 
-    # Начальная точка из хаоса
-    # M = np.array([-34.697048094358898, -62.831273385025732, 62.2309106274670827])
-    # gamma = np.array([-0.16059001362453112, -0.29080499936213250, -0.94320904356884894])
-    M = np.array([176.39671645238903, -168.85257112196294, -94.877918535603939])
-    gamma = np.array([0.69524430378189617, 0.40429993079272591, -0.59428864887075838])
-    gamma = -gamma
-
-    time_skip = 50
-    time = 10
-    step = 0.0025
-    # Параметры из хаоса
-    #         d     I1 I2 I3 a1 a2  h   E    g0
-    params = [0.480, 2, 6, 7, 9, 4, 1, 780, 100] 
-    # params = [0.2  , 5, 6, 7, 9, 4, 1, 555, 100]
-    d = params[0]
-    I1, I2, I3 = params[1], params[2], params[3]
-    a1, a2 = params[4], params[5]
-    h, E, g0 = params[6], params[7], params[8]
-
-    # Замена начальных условий из хаоса на значения кузнецова
-    QK = np.array([[np.cos(-d), np.sin(-d), 0],
-                 [-np.sin(-d),np.cos(-d),0],
-                 [0,0,1]])
-    QC = np.array([[np.cos(d), np.sin(d), 0],
-                 [-np.sin(d),np.cos(d),0],
-                 [0,0,1]])
-    M = QC @ M
-    # print('M после поворота ', M)
-    gamma = QC @ gamma
-    # print('gamma после поворота', gamma)
-
-    # Посчитаем r и omega для приведения M к необходимому уровню энергии
-    r = calc_r_vec(a1, a2, h, gamma, d)
-    # print('вектор r ', r)
-    omega = calc_omega(d, I1, I2, I3, a1, a2, h, E, g0, r, gamma, M)
-    # print('вектор omega ', omega)
-    tmp = M.copy()
-    print(tmp)
-    for k in range(3):
-        M[k] = tmp[k]*np.sqrt(2*(E+g0*np.dot(r, gamma))/(np.dot(tmp, omega)))
-    print('M после нормировки', M)
+    # Посчитаем r и omega для приведения M к необходимому уровню энергии (ЕСЛИ НАДО!!!)
+    # r = calc_r_vec(a1, a2, h, gamma, d)
+    # # print('вектор r ', r)
+    # omega = calc_omega(d, I1, I2, I3, a1, a2, h, E, g0, r, gamma, M)
+    # # print('вектор omega ', omega)
+    # tmp = M.copy()
+    # print(tmp)
+    # for k in range(3):
+    #     M[k] = tmp[k]*np.sqrt(2*(E+g0*np.dot(r, gamma))/(np.dot(tmp, omega)))
+    # print('M после нормировки', M)
     
     # Для новых m и gamma посчитаем новые r и omega
-    r = calc_r_vec(a1, a2, h, gamma, d)
-    omega = calc_omega(d, I1, I2, I3, a1, a2, h, E, g0, r, gamma, M)
-    En = (1/2) * np.dot(M, omega) - g0 * np.dot(r, gamma)
-    print("Энергия после поворота и приведения",En)
-    print(r, omega)
+    # r = calc_r_vec(a1, a2, h, gamma, d)
+    # omega = calc_omega(d, I1, I2, I3, a1, a2, h, E, g0, r, gamma, M)
+    # En = (1/2) * np.dot(M, omega) - g0 * np.dot(r, gamma)
+    print("Энергия после поворота и приведения", *calcIntegrals(M, g0, gamma))
 
     En_list = []
     Geom_list = []
-    M1_list, M2_list, gamma1_list = [], [], []
+    M1_list, M2_list, M3_list, gamma1_list, gamma2_list, gamma3_list = [], [], [], [], [], []
     old_M = M.copy()
     main_traj = np.array([*M, *gamma])
 
@@ -185,7 +189,10 @@ if __name__ == "__main__":
         Geom_list.append(np.dot(gamma, gamma))
         M1_list.append(M[0])
         M2_list.append(M[1])
+        M3_list.append(M[2])
         gamma1_list.append(gamma[0])
+        gamma2_list.append(gamma[1])
+        gamma3_list.append(gamma[2])
         # M = QK@M
         # gamma = QK @ gamma
 
@@ -193,18 +200,33 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(2,2)
     ax[0][0].set_title("Energy")
     ax[0][0].plot(x1, En_list)
-    # ax[0][0].set_ylim(460, 520)
-    # ax[0][0].set_ylim(712, 772)
-    # ax[0][0].set_ylim(1350, 1420)
+    ax[0][0].set_ylim(En-10, En+10)
+
     ax[0][1].set_title("Geom Integral")
     ax[0][1].plot(x1, Geom_list)
     ax[0][1].set_ylim(0.999, 1.001)
+
     ax[1][0].set_title("M1")
     ax[1][0].plot(x1, M1_list)
+
     ax[1][1].set_title("gamma1")
     ax[1][1].plot(x1, gamma1_list)
 
     fig_phase = plt.figure()
-    ax_phase = fig_phase.add_subplot(projection='3d')
-    ax_phase.plot(M1_list, M2_list, gamma1_list)
+    ax1 = fig_phase.add_subplot(2, 2, 1, projection='3d')
+    ax1.scatter(0,0,0, c='red', s=5)
+    ax1.plot(M1_list, M2_list, gamma1_list)
+
+    ax2 = fig_phase.add_subplot(2, 2, 2, projection='3d')
+    ax2.scatter(0,0,0, c='red', s=5)
+    ax2.plot(M1_list, M2_list, M3_list)
+
+    ax3 = fig_phase.add_subplot(2, 2, 3, projection='3d')
+    ax3.scatter(0,0,0, c='red', s=5)
+    ax3.plot(M2_list, gamma1_list, gamma2_list)
+
+    ax4 = fig_phase.add_subplot(2, 2, 4, projection='3d')
+    ax4.scatter(0,0,0, c='red', s=5)
+    ax4.plot(gamma3_list, gamma1_list, gamma2_list)
+
     plt.show()

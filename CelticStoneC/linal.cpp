@@ -2,6 +2,78 @@
 #include <cstring>
 #include <iostream>
 
+const int N = 6;
+
+void multiply6x6(double A[N][N], double B[N][N], double C[N][N]) {
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            C[i][j] = 0.0;
+            for (int k = 0; k < N; ++k) {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+}
+
+
+int invert_matrix(const double A[6][6], double invA[6][6]) {
+    double aug[6][2 * 6]; // Расширенная матрица [A | I]
+    int i, j, k;
+
+    // Формируем расширенную матрицу [A | I]
+    for (i = 0; i < 6; i++) {
+        for (j = 0; j < 6; j++) {
+            aug[i][j] = A[i][j];
+            aug[i][j + 6] = (i == j) ? 1.0 : 0.0; // единичная матрица справа
+        }
+    }
+
+    // Прямой ход метода Гаусса–Жордана
+    for (i = 0; i < 6; i++) {
+        // Находим ведущий элемент
+        double pivot = aug[i][i];
+        if (fabs(pivot) < 1e-12) {
+            // ищем строку для обмена
+            int swap_row = -1;
+            for (int r = i + 1; r < 6; r++) {
+                if (fabs(aug[r][i]) > 1e-12) {
+                    swap_row = r;
+                    break;
+                }
+            }
+            if (swap_row == -1)
+                return 0; // вырожденная матрица — обратной нет
+
+            // обмен строк
+            for (j = 0; j < 2 * 6; j++) {
+                double tmp = aug[i][j];
+                aug[i][j] = aug[swap_row][j];
+                aug[swap_row][j] = tmp;
+            }
+            pivot = aug[i][i];
+        }
+
+        // Нормализуем строку (делим на ведущий элемент)
+        for (j = 0; j < 2 * 6; j++)
+            aug[i][j] /= pivot;
+
+        // Обнуляем столбцы выше и ниже ведущего элемента
+        for (k = 0; k < 6; k++) {
+            if (k == i) continue;
+            double factor = aug[k][i];
+            for (j = 0; j < 2 * 6; j++)
+                aug[k][j] -= factor * aug[i][j];
+        }
+    }
+
+    // Копируем правую часть (обратную матрицу)
+    for (i = 0; i < 6; i++)
+        for (j = 0; j < 6; j++)
+            invA[i][j] = aug[i][j + 6];
+
+    return 1;
+}
+
 int inverse3x3(double A[3][3], double inv[3][3]) {
     double det =
           A[0][0]*(A[1][1]*A[2][2] - A[1][2]*A[2][1])

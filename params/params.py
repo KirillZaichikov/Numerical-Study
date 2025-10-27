@@ -12,23 +12,26 @@ model_type = 'flow'
 # params = np.array([-0.1, 5.1, 0])
 # params = np.array([1.371672077922078, 0.43540322580645163, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 0
 # params = np.array([1.3819673427222132, 0.4355835067637877, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 1
-params = np.array([0.68, 0.61, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 2
+# params = np.array([0.68, 0.61, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 2
+params = np.array([4.3281, 39, 8/3, 7]) # alpha lamda
 # params = np.array([1.0501456818181818, 0.6030381935483871, 0.2]) # alpha lamda B for Shimizu3X
-diffFunc = ShimizuX3_3D_flow
+diffFunc = Lorenz_4D_flow
+# diffFunc = ShimizuX3_3D_flow
 diffFuncVarF = None # или None
-dimension = 3
-crossection = 1 # for Lorenz3d 25 (z) for Lorenz4d 30/40 (y) for Shimizu3X 1.4(z)
+dimension = 4
+crossection = 40 # for Lorenz3d 25 (z) for Lorenz4d 30/40 (y) for Shimizu3X 1.4(z)
 eps = 0.01 # for Lorenz3d 0.4 1 # for Shimizu3X 0.01
-step = 0.01
-skip_time = 0
-integrate_time = 800
-skip_for_phase = 40
+step = 0.001
+skip_time = 400
+integrate_time = 400
+skip_for_phase = 2
 initial_point = np.zeros(dimension)
 # initial_point[0] = -params[0] + eps
 # initial_point[1] = -params[1] / params[0]
 initial_point[0] = 0.001
-initial_point[1] = 0
-initial_point[2] = 0
+initial_point[1] = 0.001
+initial_point[2] = 0.001
+initial_point[3] = 0.001
 
 """for lyapunov"""
 lyap_num = 3

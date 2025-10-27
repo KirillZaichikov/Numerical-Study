@@ -50,7 +50,7 @@ int main(){
     projSum[i]=0;
     double k1[6], k2[6], k3[6], k4[6], k5[6], k6[6], k7[6], k8[6];
     
-    double params[] = {0.4885, 2, 6, 7, 9, 4, 1, 752, 100};
+    double params[] = {0.43643784786641926, 2, 6, 7, 9, 4, 1, 739.5852534562213, 100};
     double delta = params[0];
     double M[] = {176.39671645238903,
                 -168.85257112196294,
@@ -107,8 +107,8 @@ int main(){
     check_energy_integral(M, gamma, r, omega, params[7], params[8]);
     
     double step = 0.0025;
-    int iterSkip = 100000;
-    int iterNum = 10000;
+    int iterSkip = 50000;
+    int iterNum = 5000;
     int dimension = 6;
     double old_ps;
     double new_ps, H;

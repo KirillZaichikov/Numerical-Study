@@ -189,9 +189,9 @@ int main(){
                       0.59428864887075838}; // Поставил мину
 
     double step = 0.0025;
-    double timeSkip = 10000;
-    double timeSkipClP = 0;
-    double calcTime = 0;
+    double timeSkip = 10;
+    double timeSkipClP = 50;
+    double calcTime = 100;
     int dimension = 6;
     int expsNum = 6;
     double eps = 0.001;

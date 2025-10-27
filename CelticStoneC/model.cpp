@@ -118,6 +118,8 @@ void CelticStone_6D_flow(const double* state, double* res, const double* params)
     omega[2] = JQ_rev[2][0] * M[0] + JQ_rev[2][1] * M[1] + JQ_rev[2][2] * M[2];
     // std::cout << "vector omega " << omega[0] << " " << omega[1] << " " << omega[2] << std::endl;
 
+    // Приведение к уровню энергии
+    /*
     tmp[0] = M[0];
     tmp[1] = M[1];
     tmp[2] = M[2];
@@ -126,7 +128,7 @@ void CelticStone_6D_flow(const double* state, double* res, const double* params)
     tmp[5] = gamma[2];
     for (int k = 0; k < 3; k++)
         M[k] = tmp[k] * pow((2 * (params[7] + params[8] * (r[0] * gamma[0] + r[1] * gamma[1] + r[2] * gamma[2])) / (tmp[0] * omega[0] + tmp[1] * omega[1] + tmp[2] * omega[2])), 0.5);
-
+    */
 
     // Посчитали вектор dgamma
     dgamma[0] =  gamma[1] * omega[2] - gamma[2] * omega[1];

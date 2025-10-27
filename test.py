@@ -1,17 +1,17 @@
-import matplotlib.pyplot as plt
-import numpy as np
 
-fig, ax1 = plt.subplots()
+import math as m
 
-x = np.linspace(0, 100)
-y1 = np.sin(x)
-y2 = np.sqrt(x)
+A0 = -1.73818
+mu0 = -0.58034
+alpha = -m.pi/6
 
-ax1.plot(x, y1)
-ax1.set_xlabel("x (основная)")
 
-ax2 = ax1.twiny()
-ax2.set_xlabel("x (вторая)")
-ax2.plot(x, y2)  # накладывается по x
+def f(A, mu):
+    new_mu = m.cos(alpha)*(mu-mu0) - m.sin(alpha)*(A-A0) + mu0
+    new_A = m.sin(alpha)*(mu-mu0) + m.cos(alpha)*(A-A0) + A0
+    return new_mu, new_A
 
-plt.show()
+
+A = -2.5
+mu = -1
+print(f(A,mu))

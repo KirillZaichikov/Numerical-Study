@@ -35,7 +35,7 @@ def Gonchenko_3D_map(state, res, params) -> None:
     res[1] = ( - params[4] * state[0] + params[3] * state[1] * ( params[0] * state[2] + params[2] ) ) / params[3] 
     res[2] = params[1] * pow ( state[1] , 2.0 ) + params[3] * state[2] 
 
-def ShimizuX3_3D_flow(state, res, params) -> None:
+def ShimizuX3_3D_flow(state, res, params, H) -> None:
     # Param - alpha lamda B 
     res[0] = state[1]
     res[1] = params[2] * pow ( state[0] , 3.0 ) - params[0] * state[1] - state[0] * state[2] + state[0]

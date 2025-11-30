@@ -47,6 +47,7 @@ int main(){
         projSum[i]=0;
     double k1[6], k2[6], k3[6], k4[6], k5[6], k6[6], k7[6], k8[6];
     
+
     // double M[] = {176.39671645238903,
     //             -168.85257112196294,
     //             -94.877918535603939};
@@ -56,6 +57,7 @@ int main(){
     // Протянул к рождению аттрактора
     double M[] = {-54.06849765, -41.5933255,   76.16298962};
     double gamma[] = {0.26638367, 0.20492122, 0.94183174}; // Тут минус уже не надо
+
     double tmp[6];
     
     const double step = 0.0025;
@@ -109,7 +111,15 @@ int main(){
     calc_vector_omega(r,omega,mainTrajectory,params);
     check_geom_integral(gamma);
     check_energy_integral(M, gamma, r, omega, params[7], params[8]);
+<<<<<<< HEAD
+    
+    double step = 0.0025;
+    int iterSkip = 50000;
+    int iterNum = 5000;
+    int dimension = 6;
+=======
 
+>>>>>>> 6a93a972f79559d189a0a4cfac72198c51d67a95
     double old_ps;
     double new_ps, H;
     double mainCopy[6];

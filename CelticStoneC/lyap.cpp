@@ -84,6 +84,7 @@ int main(){
     
 
     double step = 0.0025;
+
     double timeSkip = 0;
     double timeSkipClP = 500;
     double calcTime = 200;

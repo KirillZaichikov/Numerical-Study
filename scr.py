@@ -10,6 +10,7 @@ A = 0.2
 C = 1.5
 nu = 0.4#0.964
 time = 20000
+
 times = 1
 skip_time = 0
 x_ = 0.0

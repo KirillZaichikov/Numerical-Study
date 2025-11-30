@@ -4,10 +4,11 @@ import time
 # import distinctipy
 import colors.colors as clrs
 
-mu = np.linspace(0, 1, 500)
+
+DISCR = 1000
+mu = np.linspace(0, 0.25, DISCR)
 A = 0.5305
-C = 1.3
-nu = np.linspace(0.5, 1, 500)
+nu = np.linspace(0.5, 1, DISCR)
 # times = 1
 x_ = 0.0
 lx, ly = [], []
@@ -54,5 +55,6 @@ for i in range(len(nu)):
                 break
             if k + 1 == len(uniq_l):
                 categories.append(None)
-ax.scatter(x, y, c=colormap[categories], s=0.5)
+ax.scatter(x, y, c=colormap[categories], s=0.1)
+# plt.savefig('grafik.pdf', format='pdf')
 plt.show()

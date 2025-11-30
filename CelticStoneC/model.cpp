@@ -123,6 +123,7 @@ void CelticStone_6D_flow(const double* state, double* res, const double* params)
     omega[2] = JQ_rev[2][0] * M[0] + JQ_rev[2][1] * M[1] + JQ_rev[2][2] * M[2];
     // std::cout << "vector omega " << omega[0] << " " << omega[1] << " " << omega[2] << std::endl;
 
+
     // НОРМИРОВКА ЭНЕРГИИ
     // tmp[0] = M[0];
     // tmp[1] = M[1];

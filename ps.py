@@ -7,6 +7,12 @@ def Shimizu_3D_flow(state, res, params, H) -> None: # state - [x y z], params - 
     res[1] = (- params[0] * state[1] - state[0] * state[2] + state[0]) / H
     res[2] = (- params[1] * state[2] + pow( state[0] , 2.0 ) ) / H
 
+def Lorenz_4D_flow(state, res, params, H) -> None: # sigma r b mu 
+    res[0] = (params[0] * ( - state[0] + state[1] ) ) / H
+    res[1] = (state[0] * ( params[1] - state[2] ) - state[1]) / H
+    res[2] = (- params[2] * state[2] + params[3] * state[3] + state[0] * state[1]) / H
+    res[3] = (- params[2] * state[3] - params[3] * state[2]) / H
+
 def dverkStep(val, dimension, diffFunc, params, step, H=1) -> None:
     k1, k2, k3, k4, k5, k6, k7, k8 = np.zeros(dimension), np.zeros(dimension), np.zeros(dimension), np.zeros(dimension), \
         np.zeros(dimension), np.zeros(dimension), np.zeros(dimension), np.zeros(dimension)
@@ -44,8 +50,9 @@ def dverkStep(val, dimension, diffFunc, params, step, H=1) -> None:
         val[j] = val[j] + step * (3. / 40. * k1[j] + 875. / 2244. * k3[j] + 23. / 72. * k4[j] + 264. / 1955. * k5[j] + 125. / 11592. * k7[j] + 43. / 616. * k8[j])
 
 # z-1 = 0
-crossesction = 1
-params = np.array([0.8, 0.5]) # alpha lamda
+crossesction = 30
+params = np.array([4.51, 34, 8/3, 7]) # alpha lamda
+params = np.array([0.8, 0.4, 0.2], dtype=np.longdouble) # alpha lamda B HIGH PRIORITY 0
 initial_point = np.array([0.00001, 0, 0])
 time = 1000
 step = 0.01
@@ -59,9 +66,11 @@ for i in range(int(time/step)):
     if (initial_point[2] - 1 > 0) and (z_last <0):
         H = - params[1] * initial_point[2] + initial_point[0] ** 2
         print("before step",initial_point)
+        old_initial = initial_point.copy()
         dverkStep(initial_point, dimension, Shimizu_3D_flow, params, -(initial_point[2] - 1), H)
         print(initial_point)
         coord_list.append(list(initial_point[:3]))
+        initial_point = old_initial
     coord_list_for_phase.append(list(initial_point))
 
 transpose_list1 = (np.array(coord_list_for_phase)).T

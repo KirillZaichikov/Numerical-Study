@@ -60,7 +60,9 @@ int main(){
     int essDim = 1;
     double eps = 1e-7;
     int samplesNum = 1;
+
     double params[] = {0.4892, 2, 6, 7, 9, 4, 1, 752, 100};
+
 
     size_t ncu_dots_cnt = (size_t) (calcTime / samplesNum / step);
     size_t traj_dots_cnt = (size_t) ((calcTime / samplesNum + timeSkipClP) / step);

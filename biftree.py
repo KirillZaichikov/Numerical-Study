@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 eps = 1e-3
 skip_time = 1000
-DISCR = 1000 # disc param
+DISCR = 2000 # disc param
 a = 0.1
 b = np.linspace(-0.5, 2.8, DISCR)
 
@@ -55,7 +55,7 @@ def main():
     mas_for_points = mas_for_points[~np.isinf(mas_for_points).any(axis=1)]
     print(mas_for_points)
     mas_for_points = mas_for_points.T
-    ax.scatter(mas_for_points[0], mas_for_points[1], s=1, c="skyblue")
+    ax.scatter(mas_for_points[0], mas_for_points[1], s=0.1, c="skyblue")
     plt.show()
 
 

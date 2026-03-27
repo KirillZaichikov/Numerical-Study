@@ -9,7 +9,7 @@ def calcIntegrals(M, g0, gamma):
     return (1/2) * np.dot(M, omega) - g0 * np.dot(r, gamma), np.dot(gamma, gamma)
 
 #         d     I1 I2 I3 a1 a2  h   E    g0
-params = [0.423000, 2, 6, 7, 9, 4, 1, 744, 100] 
+params = [0.485, 2, 6, 7, 9, 4, 1, 752, 100] 
 d = params[0]
 I1, I2, I3 = params[1], params[2], params[3]
 a1, a2 = params[4], params[5]
@@ -19,9 +19,9 @@ h, E, g0 = params[6], params[7], params[8]
 # LG =  0.73725074
 # HG = -0.47236776
 # 3.6507227868, 0.6691444994, -0.3847016971
-l = 3.76
-LG =  0.68
-HG = -0.3847016971
+l = 3.59652
+LG =  0.667929
+HG = -0.3847012778
 
 m1 = (1-LG**2)**(1/2) * m.sin(l)
 m2 = (1-LG**2)**(1/2) * m.cos(l)

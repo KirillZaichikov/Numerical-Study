@@ -6,6 +6,9 @@ def MapStep(val, dimension, Func, params, step) -> None:
     Func(val, res, params)
     for j in range(dimension):
         val[j] = res[j]
+    # Func(val, res, params)
+    # for j in range(dimension):
+    #     val[j] = res[j]
 
 def dverkStep(val, dimension, diffFunc, params, step, H=1) -> None:
     k1, k2, k3, k4, k5, k6, k7, k8 = np.zeros(dimension), np.zeros(dimension), np.zeros(dimension), np.zeros(dimension), \

@@ -18,6 +18,7 @@ int G(const double x[N],  double fx[N], void(*diffFunc)(const double*, double*, 
        double step, double* params,double* arg,double* k1,double* k2,double* k3,double* k4,double* k5,double* k6,double* k7,double* k8) {
     double old_ps;
     double new_ps;
+    int iter_num = 0;
 
     double mainCopy[6];
     fx[0] = x[0];
@@ -30,12 +31,14 @@ int G(const double x[N],  double fx[N], void(*diffFunc)(const double*, double*, 
     std::cout << "**** start iteraions" << std::endl;
     for (int i=0;i<6;i++)
             std::cout << fx[i] << ' ';
+    std::cout<<std::endl;
     while (1){
+        iter_num++;
         old_ps = fx[1] * fx[3] - fx[0] * fx[4];
         dverkStep(fx, dimension, diffFunc, params, step, arg, k1, k2, k3, k4, k5, k6, k7, k8);
         new_ps = fx[1] * fx[3] - fx[0] * fx[4];
         // std::cout<< "new_ps " << new_ps << "old_ps" << old_ps << std::endl;
-        if ((new_ps < 0) and (old_ps > 0)){
+        if ((new_ps < 0) and (old_ps > 0) and (iter_num!=1)){
             dverkStep(fx, dimension, diffFuncP, params, -new_ps, arg, k1, k2, k3, k4, k5, k6, k7, k8); break;}
     }
     std::cout << "poincare point" << std::endl;
@@ -43,11 +46,11 @@ int G(const double x[N],  double fx[N], void(*diffFunc)(const double*, double*, 
         std::cout << fx[i] << ' ';
     }std::cout<<std::endl;
     fx[0] = x[0]-fx[0];
-    fx[1] = x[0]-fx[1];
-    fx[2] = x[0]-fx[2];
-    fx[3] = x[0]-fx[3];
-    fx[4] = x[0]-fx[4];
-    fx[5] = x[0]-fx[5]; 
+    fx[1] = x[1]-fx[1];
+    fx[2] = x[2]-fx[2];
+    fx[3] = x[3]-fx[3];
+    fx[4] = x[4]-fx[4];
+    fx[5] = x[5]-fx[5]; 
 }
 
 // ---------- Численное вычисление Якобиана ----------
@@ -157,9 +160,11 @@ int main() {
 
 // [-59.75327948 -38.86436877  64.18356172] [0.27811238 0.18088818 0.94336259]
     double params[] = {0.485, 2, 6, 7, 9, 4, 1, 752, 100};
-    double M[] = {-60.22089994, -30.39261507,  62.56014739};
-    double gamma[] = {0.30853354, 0.1557124,  0.93838196}; // Тут вбита неподвижная точка при 0.485 752
-    double step = 0.0001;
+    // double M[] = {-60.22089994, -30.39261507,  62.56014739};
+    // double gamma[] = {0.30853354, 0.1557124,  0.93838196}; // Тут вбита неподвижная точка при 0.485 752
+    double M[] = {-58.83471479, -42.97561214,  65.38964294};
+    double gamma[] = {0.266659,   0.19478014, 0.94390342};
+    double step = 0.0025;
     double initial_point[] = {M[0], M[1], M[2], gamma[0], gamma[1], gamma[2]};
     if (newton_numeric(initial_point, diffFunc, diffFuncP, step, params, arg, k1, k2, k3, k4, k5, k6, k7, k8)) {
         printf("Solution founded:\n");

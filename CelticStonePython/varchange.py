@@ -3,23 +3,25 @@ import numpy as np
 
 # M = np.ndarray(3)
 # gamma = np.ndarray(3)
-M = np.array([-54.065601,  -41.130199,  76.661598]) 
-gamma = np.array([  0.267023,  0.203137,  0.942037])
+# 120.63233985265303, -58.58808404718062, -107.37176969353844, -0.7753054865740857, -0.4022390300169346, 0.4869709205288837 точка 1 маршурта при E=735.6 delta = 0.465
+M = np.array([-34.697048094358898, -62.831273385025732, 62.230910627467082]) 
+gamma = np.array([-0.16059001362453112, -0.29080499936213250, -0.94320904356884894])
 gamma = -gamma # Нужно гамму обратно повернуть
-d = 0.423
+d = 0.485
 
 #Нужно обратно повернуть
-QK = np.array([[np.cos(-d), np.sin(-d), 0],
-                 [-np.sin(-d),np.cos(-d),0],
-                 [0,0,1]])
-M = QK @ M
-gamma = QK @ gamma
-# M = M / np.linalg.norm(M)
+# QK = np.array([[np.cos(-d), np.sin(-d), 0],
+#                  [-np.sin(-d),np.cos(-d),0],
+#                  [0,0,1]])
+# M = QK @ M
+# gamma = QK @ gamma
+M = M / np.linalg.norm(M)
 
 L = M[2]
 G = m.sqrt(M[0]**2+M[1]**2+M[2]**2)
 H = np.dot(M,gamma)
-l = m.atan(M[0]/M[1])
+l = m.atan(M[0]/M[1]) # В этом случае пи надо прибавлять
+# l = m.atan2(M[0],M[1])
 g = np.atan((M[1]*gamma[0]-M[0]*gamma[1])/(H*L/G-G*gamma[2]))
 
 print(L,G,H,l,g, sep='\n')

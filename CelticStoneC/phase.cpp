@@ -111,15 +111,12 @@ int main(){
     calc_vector_omega(r,omega,mainTrajectory,params);
     check_geom_integral(gamma);
     check_energy_integral(M, gamma, r, omega, params[7], params[8]);
-<<<<<<< HEAD
-    
+
     double step = 0.0025;
     int iterSkip = 50000;
     int iterNum = 5000;
     int dimension = 6;
-=======
 
->>>>>>> 6a93a972f79559d189a0a4cfac72198c51d67a95
     double old_ps;
     double new_ps, H;
     double mainCopy[6];

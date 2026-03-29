@@ -1,61 +1,143 @@
+'''
+Код для построения однопараметрического дерева бифуркаций
+'''
+
+
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
 
 
-eps = 1e-3
 skip_time = 1000
-DISCR = 1000 # disc param
-a = 0.1
-b = np.linspace(-0.5, 2.8, DISCR)
+len_time = 500
+DISCR = 10000 # disc param
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(12,8), dpi=400)
+ax.tick_params(axis='both', labelsize=18)
 
+params = np.array([0.365, 0.56, 0.2, 1], dtype=np.longdouble) # eps alpha beta p lerFRM
+border = 0.4
+min_border = 0.0
+ax.set_xlim(params[0], border)
 
-def map(initial_point, params):
-    return params[0] + params[1] * initial_point - initial_point ** 3
+def lerFRM_3D_map(state, res, params):
+    eps, alpha, beta, p = params
+    ksi0, eta0, teta0 = state
+
+    # LOCAL 2
+    ro = np.sqrt(ksi0**2+eta0**2)/p
+    teta0 = teta0
+    phi0 = np.atan2(eta0, ksi0) + teta0
+
+    r = p * (ro / p) ** ((alpha+eps)/(alpha-eps))
+    teta1 = ((beta + eps) / (alpha - eps)) * np.log(p/ro) + teta0
+    phi1 = (((beta - eps) / (alpha - eps)) * np.log(p/ro) + phi0)
+
+    while (phi1 > m.pi):
+        phi1 = phi1 - 2 * m.pi
+    while (phi1 < -m.pi):
+        phi1 += 2 * m.pi
+    ksi1 = r * p * np.cos(phi1-teta1)
+    eta1 = r * p * np.sin(phi1-teta1)
+    phi1 = phi1
+
+    # ******** S3
+    # ksi2 = ksi1 + eps * np.cos(2*phi1)
+    # eta2 = eta1 + eps * np.sin(2*phi1)
+    # # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
+    # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+
+    # ******** S2
+    # ksi2 = ksi1 + eps * np.cos(phi1)
+    # eta2 = eta1 + eps * np.sin(phi1)
+    # # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
+    # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+
+    # ******** S1
+    ksi2 = ksi1 + eps * (0.5 + 0.25 * np.cos(phi1))
+    eta2 = eta1 + 0.75 * eps * np.sin(phi1)
+    # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
+    teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+    while teta2>np.pi:
+        teta2 -= 2 * np.pi
+    while teta2<-np.pi:
+        teta2 += 2 * np.pi
+
+    return [ksi2, eta2, teta2]
+
+def map(state, res, params):
+    return lerFRM_3D_map(state,res,params)
 
 
 def main():
 
-    mas_for_points = np.ndarray((DISCR*50, 2))
+    mas_for_points = np.ndarray((DISCR*len_time, 2))
     print('calc start:')
-    initial_point = 0.25  # надо указывать
+    initial_point = [0.001,0.001,0]  # надо указывать
+    res = np.zeros(3)
+    step = (border - params[0]) / DISCR
     for i in range(DISCR):
-        params = [a, b[DISCR - i-1]]
+        params[0] += step
         print(params)
 
         for counter in range(skip_time):
-            initial_point = map(initial_point, params)
+            initial_point = map(initial_point, res, params)
 
-        for counter in range(50):
-            initial_point = map(initial_point, params)
-            mas_for_points[counter+i*50] = [params[1], initial_point]
+        for counter in range(len_time):
+            initial_point = map(initial_point, res, params)
+            mas_for_points[counter+i*len_time] = [params[0], initial_point[0]]
 
     mas_for_points = mas_for_points[~np.isnan(mas_for_points).any(axis=1)]
     mas_for_points = mas_for_points[~np.isinf(mas_for_points).any(axis=1)]
     print(mas_for_points)
     mas_for_points = mas_for_points.T
-    ax.scatter(mas_for_points[0], mas_for_points[1], s=1, c="black")
+    # ax.scatter(mas_for_points[0], mas_for_points[1], s=1, c="black")
+    # ax.plot(mas_for_points[0], mas_for_points[1], linestyle='', marker='.', markersize=0.1, color="black")
+    ax.plot(mas_for_points[0], mas_for_points[1], ',k', alpha=0.25)
 
-    mas_for_points = np.ndarray((DISCR*50, 2))
-    initial_point = 0.25  # надо указывать
-    for i in range(DISCR):
-        params = [a, b[i]]
-        print(params)
+    ####### ИДЕМ В ОБРАТНОМ НАПРАВЛЕНИИ От НАЧАЛЬНОЙ ТОЧКИ
+    # mas_for_points = np.ndarray((DISCR*len_time, 2))
+    # # initial_point = [0.001,0.001,0]  # надо указывать
+    # params[0] = 0.2
+    # step = abs(min_border - params[0]) / DISCR
+    # for i in range(DISCR):
+    #     params[0] -= step
+    #     print(params)
 
-        for counter in range(skip_time):
-            initial_point = map(initial_point, params)
+    #     for counter in range(skip_time):
+    #         initial_point = map(initial_point, res, params)
 
-        for counter in range(50):
-            initial_point = map(initial_point, params)
-            mas_for_points[counter+i*50] = [params[1], initial_point]
+    #     for counter in range(len_time):
+    #         initial_point = map(initial_point, res, params)
+    #         mas_for_points[counter+i*len_time] = [params[0], initial_point[0]]
 
-    mas_for_points = mas_for_points[~np.isnan(mas_for_points).any(axis=1)]
-    mas_for_points = mas_for_points[~np.isinf(mas_for_points).any(axis=1)]
-    print(mas_for_points)
-    mas_for_points = mas_for_points.T
-    ax.scatter(mas_for_points[0], mas_for_points[1], s=1, c="skyblue")
+    # mas_for_points = mas_for_points[~np.isnan(mas_for_points).any(axis=1)]
+    # mas_for_points = mas_for_points[~np.isinf(mas_for_points).any(axis=1)]
+    # print(mas_for_points)
+    # mas_for_points = mas_for_points.T
+    # ax.plot(mas_for_points[0], mas_for_points[1], ',k', alpha=0.25)
+
+    ####### ИДЕМ В ОБРАТНОМ НАПРАВЛЕНИИ
+    # mas_for_points = np.ndarray((DISCR*len_time, 2))
+    # # initial_point = [0.001,0.001,0]  # надо указывать
+    # for i in range(DISCR):
+    #     params[0] -= 0.2 / DISCR
+    #     print(params)
+
+    #     for counter in range(skip_time):
+    #         initial_point = map(initial_point, res, params)
+
+    #     for counter in range(len_time):
+    #         initial_point = map(initial_point, res, params)
+    #         mas_for_points[counter+i*len_time] = [params[0], initial_point[0]]
+
+    # mas_for_points = mas_for_points[~np.isnan(mas_for_points).any(axis=1)]
+    # mas_for_points = mas_for_points[~np.isinf(mas_for_points).any(axis=1)]
+    # print(mas_for_points)
+    # mas_for_points = mas_for_points.T
+    # ax.scatter(mas_for_points[0], mas_for_points[1], s=0.1, c="skyblue")
+
+    plt.savefig("biftree.png", dpi=400)
     plt.show()
 
 

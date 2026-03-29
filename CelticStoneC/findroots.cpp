@@ -34,6 +34,7 @@ int F(const double x[N],  double fx[N], void(*diffFunc)(const double*, double*, 
        double step, double* params,double* arg,double* k1,double* k2,double* k3,double* k4,double* k5,double* k6,double* k7,double* k8) {
     double old_ps;
     double new_ps;
+    int iter_num = 0;
 
     double mainCopy[6];
     fx[0] = x[0];
@@ -48,6 +49,7 @@ int F(const double x[N],  double fx[N], void(*diffFunc)(const double*, double*, 
     //         std::cout << fx[i] << ' ';
     int c = 0;
     while (1){
+        iter_num++;
         old_ps = fx[1] * fx[3] - fx[0] * fx[4];
         dverkStep(fx, dimension, diffFunc, params, step, arg, k1, k2, k3, k4, k5, k6, k7, k8);
         new_ps = fx[1] * fx[3] - fx[0] * fx[4];

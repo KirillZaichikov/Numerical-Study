@@ -22,7 +22,7 @@ A_ = np.linspace(-4, 0, 1500)
 C_ = 1.3
 nu_ = 0.8#0.964
 skip_time = 0
-time = 10
+time = 100
 
 times = 1
 skip_time = 0

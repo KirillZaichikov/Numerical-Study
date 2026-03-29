@@ -20,10 +20,12 @@ gamma = QK @ gamma
 print(M,gamma)
 # M = M / np.linalg.norm(M)
 
+
 L = M[2]
 G = m.sqrt(M[0]**2+M[1]**2+M[2]**2)
 H = np.dot(M,gamma)
-l = m.atan(M[0]/M[1])
+l = m.atan(M[0]/M[1]) # В этом случае пи надо прибавлять
+# l = m.atan2(M[0],M[1])
 g = np.atan((M[1]*gamma[0]-M[0]*gamma[1])/(H*L/G-G*gamma[2]))
 
 print(L,G,H,l,g, sep='\n')

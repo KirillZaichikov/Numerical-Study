@@ -1,3 +1,7 @@
+'''
+Фазовый портрет для кельтского камня в координатах хаоса
+'''
+
 import numpy as np
 import matplotlib.pyplot as plt
 

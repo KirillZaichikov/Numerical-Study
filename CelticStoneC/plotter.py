@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 a = []
-with open("matrix.txt","r") as file:
+with open("build//matrix.txt","r") as file:
     for line in file.readlines():
         tmp = line[:-2].split(' ')
         for i in range(len(tmp)):

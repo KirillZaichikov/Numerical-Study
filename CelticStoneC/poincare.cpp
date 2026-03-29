@@ -60,8 +60,8 @@ int main(){
     double tmp[6];
     
     const double step = 0.0025;
-    const int iterSkip = 0;
-    const int iterNum = 1;
+    const int iterSkip = 1000;
+    const int iterNum = 1000;
     const int dimension = 6;
 
     double params[] = {0.485, 2, 6, 7, 9, 4, 1, 752, 100};

@@ -15,6 +15,17 @@ void multiply6x6(double A[N][N], double B[N][N], double C[N][N]) {
     }
 }
 
+void multiply3x3(double A[3][3], double B[3][3], double C[3][3]) {
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            C[i][j] = 0.0;
+            for (int k = 0; k < 3; ++k) {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+}
+
 
 int invert_matrix(const double A[6][6], double invA[6][6]) {
     double aug[6][2 * 6]; // Расширенная матрица [A | I]

@@ -1,5 +1,6 @@
 import numpy as np
 import math as m
+# from numba import jit
 
 def Shimizu_3D_flow(state, res, params) -> None:
     res[0] = state[1]
@@ -73,6 +74,7 @@ def Hw_3D_flow(state, res, params) -> None: # l w m
     res[1] = (params[0] + state[2]+state[0]**2-state[0]**4 / 18)*state[1]+params[1]*state[0]
     res[2] = params[2] - state[0] ** 2
 
+# @jit(nopython=True, cache=True)
 def lerFRM_3D_map(state, res, params):
     eps, alpha, beta, p = params
     # print(eps, alpha, p_s, p_u)
@@ -139,22 +141,22 @@ def lerFRM_3D_map(state, res, params):
     #     phi1 += 2 * m.pi
 
     # ******** S3
-    ksi2 = ksi1 + eps * np.cos(2*phi1)
-    eta2 = eta1 + eps * np.sin(2*phi1)
+    # ksi2 = ksi1 + eps * np.cos(2*phi1)
+    # eta2 = eta1 + eps * np.sin(2*phi1)
     # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
-    teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+    # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
 
     # ******** S2
     # ksi2 = ksi1 + eps * np.cos(phi1)
     # eta2 = eta1 + eps * np.sin(phi1)
-    # # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
+    # # # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
     # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
 
     # ******** S1
-    # ksi2 = ksi1 + eps * (0.5 + 0.25 * np.cos(phi1))
-    # eta2 = eta1 + 0.75 * eps * np.sin(phi1)
+    ksi2 = ksi1 + eps * (0.5 + 0.25 * np.cos(phi1))
+    eta2 = eta1 + 0.75 * eps * np.sin(phi1)
     # # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
-    # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+    teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
     while teta2>np.pi:
         teta2 -= 2 * np.pi
     while teta2<-np.pi:

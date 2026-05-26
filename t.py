@@ -1,17 +1,9 @@
-import matplotlib.pyplot as plt
+from ipaddress import ip_network
 
-fig, ax = plt.subplots()
+net = ip_network("192.192.192.192/255.255.254.0",0)
+print(net)
+print(net.num_addresses)
+print(net.network_address)
+enumerate(net,)
+con
 
-start = 1_500_000
-plus = 500_000
-inflation = 1.05
-deposit = 1.1
-x,y=[], []
-for i in range(20):
-    x.append(i+23)
-    y.append(start)
-    start = (start * (1 + deposit - inflation)) + plus
-    # plus = plus * inflation
-plt.gca().ticklabel_format(style='plain', axis='y')
-ax.plot(x,y)
-plt.show()

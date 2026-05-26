@@ -1,6 +1,7 @@
 import numpy as np
+# from numba import jit
 
-
+# @jit(nopython=True, cache=True)
 def MapStep(val, dimension, Func, params, step) -> None:
     res = np.zeros(dimension)
     Func(val, res, params)

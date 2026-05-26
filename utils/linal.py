@@ -1,12 +1,14 @@
 import numpy as np
+# from numba import jit
 
+# @jit(nopython=True, cache=True)
 def dotProduct(firstVec, secondVec, length):
     res = 0
     for i in range(length):
         res += firstVec[i] * secondVec[i]
     return res
 
-
+# @jit(nopython=True, cache=True)
 def ortVecs(vecs, dimension, numVecs):
     projCoeff = 0
     projSum = np.zeros(dimension)

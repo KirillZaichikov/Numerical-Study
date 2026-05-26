@@ -1,3 +1,8 @@
+'''
+замена из L/G H/G l в M gamma
+'''
+
+
 import math as m
 from kuz import calc_r_vec, calc_omega, calcIntegrals
 import numpy as np

@@ -71,6 +71,7 @@ def find_min_ang(params, start_point, first_vector_for_cu, first_vector_for_lyap
 
         der = der - start_point
         # print(np.linalg.norm(der))
+        # КОСТЫЛЬ ДЛЯ РАСЧЕТОВ НА ТОРЕ
         if np.linalg.norm(der) > np.pi:
             if points_main[i][2] > 0 and der[2] < 0:
                 der[2] = der[2] + np.pi * 2

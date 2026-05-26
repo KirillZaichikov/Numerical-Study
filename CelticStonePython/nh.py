@@ -1,3 +1,8 @@
+'''
+Тут кажется полная херня так как 
+вектора omega и r считаются не внутри интегратора
+'''
+
 import math as m
 import numpy as np
 from utils.integrator import *
@@ -118,7 +123,6 @@ def sys(state, res, params, omega, H): # масса 1
     # gamma3_ = gamma1 * omega2 - gamma2 * omega1
 
     res[0], res[1], res[2], res[3]= m1_, m2_, gamma1_, gamma2_
-
 
 def dverkStep(val, dimension, diffFunc, params, step, omega, H=1) -> None:
     k1, k2, k3, k4, k5, k6, k7, k8 = np.zeros(dimension), np.zeros(dimension), np.zeros(dimension), np.zeros(dimension), \

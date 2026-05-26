@@ -1,3 +1,7 @@
+'''
+тут лежат функции для координат Кузнецова
+'''
+
 import numpy as np
 
 def calc_r_vec(a1, a2, h, gamma, d):

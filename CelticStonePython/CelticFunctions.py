@@ -1,3 +1,7 @@
+'''
+Тут лежат сишные функции в координатах хаоса, кажется они из maple
+'''
+
 import numpy as np
 
 def calc_r_vec(a1, a2, h, gamma, d):

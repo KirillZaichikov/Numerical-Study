@@ -45,7 +45,7 @@ ax2d_2.set_xlim(-np.pi, np.pi)
 ax2d_2.set_xlabel("teta")
 ax2d_2.set_ylabel("ksi")
 
-def main(start_point):
+def main(start_point, clr):
     mas_for_points = np.array([ [None] * dimension for i in range(int((integrate_time / step) / skip_for_phase))])
     
     print("***********TIME for integrate:", (int(integrate_time / step)))
@@ -75,10 +75,12 @@ def main(start_point):
     if model_type == "map":
         # ax3d.plot(mas_for_points[0], mas_for_points[1], mas_for_points[2], linestyle="", marker="o", markersize=0.3, color="black", rasterized=True)
 
-        ax2d_2.plot(mas_for_points[2], mas_for_points[0], linestyle="", marker="o", markersize=0.05, color="black", rasterized=True)
+        ax2d_2.plot(mas_for_points[2], mas_for_points[0], linestyle="", marker="o", markersize=0.05, color=clr, rasterized=True)
         
         # ax2d_2.plot(mas_for_points[2], mas_for_points[0], linestyle="", marker="o", markersize=2, color="black", rasterized=True)
         # ax2d_2.plot(mas_for_points[2], mas_for_points[0], ',k', alpha=0.25) #0.25
+        # ax2d_2.scatter(mas_for_points[2], mas_for_points[0], marker=',', color=clr, alpha=0.25) #0.25
+        # ax2d_2.plot(mas_for_points[2], mas_for_points[0], marker=',', color=clr, alpha=0.25)
         plt.savefig('high_res_plot.png', dpi=400)
         # ax.plot(mas_for_points[0], mas_for_points[1], linestyle="", marker="o", markersize=1, color="black")
     else:
@@ -86,9 +88,12 @@ def main(start_point):
 
 
 if __name__ == "__main__":
-    start_point = np.array([initial_point])
-    for i in start_point:
-        main(i)
+    start_point = np.array(initial_point)
+    clrs = ["black", "red"]
+    print(start_point)
+    for (i, j) in zip(start_point, clrs):
+        print(i)
+        main(i, j)
     print("*********** calc is ending")
     plt.savefig("plot.pdf", dpi=300)
     plt.show()

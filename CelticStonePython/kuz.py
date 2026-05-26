@@ -1,3 +1,7 @@
+'''
+фазовый портрет и интегралы в координатах кузнецова
+'''
+
 import numpy as np
 import matplotlib.pyplot as plt
 

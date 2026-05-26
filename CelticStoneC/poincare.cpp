@@ -64,7 +64,7 @@ int main(){
     
     const double step = 0.0025;
     const int iterSkip = 1000;
-    const int iterNum = 2000;
+    const int iterNum = 1000;
     const int dimension = 6;
 
     double params[] = {0.485, 2, 6, 7, 9, 4, 1, 752, 100};

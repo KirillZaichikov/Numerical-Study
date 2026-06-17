@@ -2,3 +2,94 @@ utils/__pycache__/
 firstretMaps/
 colors/__pycache__/
 2dimmaps/
+
+# =========================
+# Python
+# =========================
+
+__pycache__/
+**/__pycache__/
+
+*.pyc
+*.pyo
+*.pyd
+*.py.class
+
+# =========================
+# Numba
+# =========================
+
+*.nbc
+*.nbi
+
+# =========================
+# Jupyter
+# =========================
+
+.ipynb_checkpoints/
+
+# =========================
+# VS Code
+# =========================
+
+.vscode/
+
+# =========================
+# Virtual environments
+# =========================
+
+.venv/
+venv/
+env/
+ENV/
+
+# =========================
+# Build artifacts
+# =========================
+
+build/
+dist/
+*.egg-info/
+
+# =========================
+# Testing
+# =========================
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# OS files
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Temporary files
+# =========================
+
+*.tmp
+*.temp
+*.log
+
+# =========================
+# Generated plots
+# =========================
+
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.pdf
+
+# =========================
+# Large numerical outputs
+# (раскомментируй если это результаты вычислений)
+# =========================
+
+# results/
+# output/
+# data/generated/

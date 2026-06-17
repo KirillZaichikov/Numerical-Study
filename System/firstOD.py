@@ -1,3 +1,9 @@
+'''
+Отрисовка первого пересечения с поверхностью сечения
+в координатах omega1 omega2 dzeta
+сечем по omega1
+'''
+
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
@@ -137,6 +143,7 @@ def mg_to_dpt(start_point, params):
     _ksi = np.atan2(omega2, omega1)
     point = np.array([_ksi+_phi,_phi,_teta])
     norm_solution(point)
+    print("(mg_to_dpt)", point)
     return point.copy()
 
 @jit(nopython=True, cache=True)
@@ -270,13 +277,15 @@ if __name__ == "__main__":
     # Отрисовка траекторий
     colors = plt.cm.plasma(np.linspace(0, 1, len(mas_for_points)))
     points_number = 0
+    # absol = []
     for i, (traj, color) in enumerate(zip(mas_for_points, colors)):
             points_number += len(traj[:count_mas[i]])
             # print(count_mas[i])
             # print(traj[count_mas[i]-2])
+            # absol.append([np.linalg.norm(a) for a in traj[:count_mas[i]]])
             points = pv.PolyData(traj[:count_mas[i]])
             plotter.add_mesh(points, color=color[:3], point_size=1)
-
+    # print(min(absol), max(absol))
     # Настройка границ
     bounds = plotter.bounds
     plotter.show_bounds(bounds=(bounds[0], bounds[1],   # X

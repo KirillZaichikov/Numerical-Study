@@ -116,16 +116,24 @@ def lerFRM_3D_map(state, res, params):
     teta1 = ((beta + eps) / (alpha - eps)) * np.log(p/ro) + teta0
     phi1 = (((beta - eps) / (alpha - eps)) * np.log(p/ro) + phi0)
 
+    # print(r, teta1, phi1)
+
     while (phi1 > m.pi):
         phi1 = phi1 - 2 * m.pi
     while (phi1 < -m.pi):
         phi1 += 2 * m.pi
+
+    # while (teta1 > m.pi):
+    #     teta1 = teta1 - 2 * m.pi
+    # while (teta1 < -m.pi):
+    #     teta1 += 2 * m.pi
     # print("r, teta1, phi1")
     # print(r, teta1, phi1)
     ksi1 = r * p * np.cos(phi1-teta1)
     eta1 = r * p * np.sin(phi1-teta1)
     phi1 = phi1
 
+    # print(ksi1, eta1, phi1)
     # LOCAL 3
     # r_factor = (p * p)
     # scale = pow(r_factor, (-2.0 * eps) / (alpha - eps))
@@ -141,10 +149,11 @@ def lerFRM_3D_map(state, res, params):
     #     phi1 += 2 * m.pi
 
     # ******** S3
-    # ksi2 = ksi1 + eps * np.cos(2*phi1)
-    # eta2 = eta1 + eps * np.sin(2*phi1)
+    ksi2 = ksi1 + eps * np.cos(2*phi1)
+    eta2 = eta1 + eps * np.sin(2*phi1)
     # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
-    # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+    teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+    # teta2 = phi1
 
     # ******** S2
     # ksi2 = ksi1 + eps * np.cos(phi1)
@@ -153,10 +162,13 @@ def lerFRM_3D_map(state, res, params):
     # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
 
     # ******** S1
-    ksi2 = ksi1 + eps * (0.5 + 0.25 * np.cos(phi1))
-    eta2 = eta1 + 0.75 * eps * np.sin(phi1)
+    # ksi2 = ksi1 + eps * (0.5 + 0.25 * np.cos(phi1))
+    # eta2 = eta1 + 0.75 * eps * np.sin(phi1)
     # # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
-    teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+    # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+    # teta2 =  phi1
+
+    # print(ksi2, eta2, teta2)
     while teta2>np.pi:
         teta2 -= 2 * np.pi
     while teta2<-np.pi:

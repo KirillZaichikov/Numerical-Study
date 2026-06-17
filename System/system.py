@@ -145,7 +145,11 @@ def omegaGamma_sys(start_point, res, params, H):
 
     t1 = _g3 * _g3
     t2 = 1 - t1
-    if t2 <0: print("ERROR (t2 less than 0)", t2)
+    if t2 <0: 
+        print("ERROR (t2 less than 0)", t2)
+        # if abs(t2)<0.0001:
+        #     t2 = round(t2)
+        # print("(t2 after fix)", t2)
     t3 = np.sqrt(t2)
     t4 = -_g1*w_2 + _g2*w_1
     t41 = -np.sin(__phi)*w_2 + np.cos(__phi)*w_1

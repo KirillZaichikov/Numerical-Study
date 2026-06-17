@@ -1,3 +1,8 @@
+'''
+Тут рисуется просто фазовый портрет, 
+интегрирование при этом в переменных M gamma
+фазовый в переменных dzeta phi teta
+'''
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt

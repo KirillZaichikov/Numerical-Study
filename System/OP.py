@@ -1,3 +1,9 @@
+'''
+Фазовый портрет и проверка интегралов энергии
+в координатах omega1, omega2, phi
+интегрирование в координатах M Gamma
+'''
+
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt

@@ -1,3 +1,9 @@
+'''
+отображение Пуанкаре в координатах omega1, omega2, phi
+на плоскость phi = const
+Кажется недоработано
+'''
+
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
@@ -191,10 +197,10 @@ if __name__ == "__main__":
     axEn[1].plot([i for i in range(len(En_mas))], En_mas)
     axEn[0].plot([i for i in range(len(geom_mas))], geom_mas)
 
-    ax.plot(mas_for_points[2], mas_for_points[0], mas_for_points[1], linestyle="", marker="o", markersize=0.1, color="black")
-    ax.scatter(oop_start[2], oop_start[0], oop_start[1], c="red")
-    ax.scatter(old_pointOOP[2], old_pointOOP[0], old_pointOOP[1], c="blue")
-    ax.scatter(mas_for_cross[2],mas_for_cross[0],mas_for_cross[1], c="magenta")
+    # ax.plot(mas_for_points[2], mas_for_points[0], mas_for_points[1], linestyle="", marker="o", markersize=0.1, color="black")
+    # ax.scatter(oop_start[2], oop_start[0], oop_start[1], c="red")
+    # ax.scatter(old_pointOOP[2], old_pointOOP[0], old_pointOOP[1], c="blue")
+    # ax.scatter(mas_for_cross[2],mas_for_cross[0],mas_for_cross[1], c="magenta")
 
     figPoin, axPoin = plt.subplots()
     axPoin.plot(mas_for_cross[0], mas_for_cross[1], linestyle="", marker="o", markersize=2, color="black")

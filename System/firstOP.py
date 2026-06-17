@@ -1,3 +1,8 @@
+'''
+Отрисовка первого пересечения с поверхностью сечения
+в координатах omega1 omega2 phi
+сечем по phi
+'''
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
@@ -27,6 +32,10 @@ def mg_to_oop(start_point):
     _phi = np.atan2(_g1, _g2)
     point = np.array([omega1, omega2, _phi])
     norm_solution(point)
+    # ТУТ ОШИБОК НЕ ВОЗНИКАЕТ
+    if point[2] > 2*np.pi or point[2] < 0:
+        print('ERROR(mg_to_oop)', point)
+        print(np.sqrt(-1))
     return point.copy()
 
 @jit(nopython=True, cache=True)
@@ -57,9 +66,20 @@ def oop_to_mg(start_point, params):
         teta0 = teta1
 
     # print(fx0)
+    # ТУТ ОШИБКИ НЕТ
+    if teta0 < 0 or teta0 > np.pi:
+        print('ERROR (oop_to_mg)', teta0)
+        print(np.sqrt(-1))
     gamma1=np.sin(teta0)*np.sin(phi)
     gamma2=np.sin(teta0)*np.cos(phi)
     gamma3=np.cos(teta0)
+
+    # ТУТ ОШИБКИ НЕТ
+    # CHECK
+    mod = np.sqrt(gamma1**2+gamma2**2+gamma3**2)
+    if mod < 0.99 or mod > 1.01:
+        print('ERROR (oop_to_mg)', mod)
+        print(np.sqrt(-1))
 
     return np.array([omega1, omega2, gamma1, gamma2, gamma3]).copy()
 
@@ -67,6 +87,7 @@ def oop_to_mg(start_point, params):
 def mg_to_dpt(start_point, params):
     '''
     MG -> dzeta, phi, teta
+    НИКАК НЕ КОНТРОЛИРУЕТСЯ PHI, ПРОБЛЕМ ОДНАКО НЕ ВОЗНИКАЛО
     '''
     omega1, omega2, _g1, _g2, _g3 = start_point
     _phi = np.atan2(_g1, _g2)
@@ -74,6 +95,10 @@ def mg_to_dpt(start_point, params):
     _ksi = np.atan2(omega2, omega1)
     point = np.array([_ksi+_phi,_phi,_teta])
     norm_solution(point)
+    print(point)
+    # ТУТ ОШИБОК НЕ ВОЗНИКАЕТ
+    if _phi>2*np.pi or _phi<0 or point[2] < 0 or point[2] > 2*np.pi:
+        print('ERROR(mg_to_dpt)', point, _phi)
     return point.copy()
 
 @jit(nopython=True, cache=True)

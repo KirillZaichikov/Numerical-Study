@@ -1,4 +1,5 @@
 import numpy as np
+import math as m
 from scipy.optimize import root
 from typing import Callable, Optional, Tuple
 import matplotlib.pyplot as plt
@@ -264,50 +265,142 @@ class PeriodicPointFinder3D:
 
 
 # Пример использования с отображением Хенона в 3D
-def LermanMap(x: np.ndarray, eps: float = 0.0505, alpha: float = 0.431, beta: float = 0.2, p: float = 1) -> np.ndarray:
-    """
-    3D отображение Lerman.
+# def LermanMap(x: np.ndarray, eps: float = 0.0505, alpha: float = 0.431, beta: float = 0.2, p: float = 1) -> np.ndarray:
+#     """
+#     3D отображение Lerman.
     
-    Parameters:
-    -----------
-    x : np.ndarray
-        Точка в R^3 [ksi, eta, teta]
-    eps, alpha, beta, p : float
-        Параметры отображения
+#     Parameters:
+#     -----------
+#     x : np.ndarray
+#         Точка в R^3 [ksi, eta, teta]
+#     eps, alpha, beta, p : float
+#         Параметры отображения
         
-    Returns:
-    --------
-    next_x : np.ndarray
-        Следующая точка
-    """
+#     Returns:
+#     --------
+#     next_x : np.ndarray
+#         Следующая точка
+#     """
+#     # LOCAL 2
+#     ro = np.sqrt(x[0]**2+x[1]**2)/p
+#     x[2] = x[2]
+#     phi0 = np.atan2(x[1], x[0]) + x[2]
+
+#     r = p * (ro / p) ** ((alpha+eps)/(alpha-eps))
+#     teta1 = ((beta + eps) / (alpha - eps)) * np.log(p/ro) + x[2]
+#     phi1 = ((beta - eps) / (alpha - eps)) * np.log(p/ro) + phi0
+#     # phi1 = ((((beta - eps) / (alpha - eps)) * np.log(p/ro) + phi0) % (2 * np.pi)) - np.pi
+#     while (phi1 > np.pi):
+#         phi1 = phi1 - 2 * np.pi
+#     while (phi1 < -np.pi):
+#         phi1 += 2 * np.pi
+
+#     ksi1 = r * p * np.cos(phi1-teta1)
+#     eta1 = r * p * np.sin(phi1-teta1)
+#     phi1 = phi1
+
+#     # ******** S3
+#     ksi2 = ksi1 + eps * np.cos(2*phi1)
+#     eta2 = eta1 + eps * np.sin(2*phi1)
+#     # teta2 = phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+#     teta2 = phi1
+#     while teta2>np.pi:
+#         teta2 -= 2 * np.pi
+#     while teta2<-np.pi:
+#         teta2 += 2 * np.pi
+
+#     return np.array([ksi2, eta2, teta2])
+
+def LermanMap(x: np.ndarray, eps: float = 0.0505, alpha: float = 0.431, beta: float = 0.2, p: float = 1):
+    # eps, alpha, beta, p = params
+    # print(eps, alpha, p_s, p_u)
+    ksi0, eta0, teta0 = x
+
+    # LOCAL 1
+    # r_factor = (p**2) / np.sqrt(ksi0**2 + eta0**2)
+    # scale = (r_factor) ** ((-2 * eps) / (alpha - eps))
+
+    # Phi0 = np.arctan2(eta0, ksi0)
+    # # Phi1 = (-(2 * eps) / (alpha - eps)) * np.log(r_factor) + Phi0
+    # # if Phi1>np.pi:
+    # #     Phi1 -= 2 * np.pi
+    # # elif Phi1<-np.pi:
+    # #     Phi1 += 2 * np.pi
+
+    # # ksi1 = p_s * p_u * scale * np.cos(Phi1)
+    # # eta1 = p_s * p_u * scale * np.sin(Phi1)
+    # # phi1 = Phi1 - teta0
+    # ksi1 = scale * ( ksi0 * np.cos( ((2*eps)/(alpha-eps)) * np.log(r_factor)) + eta0 * np.sin(((2*eps)/(alpha-eps)) * np.log(r_factor)))
+    # eta1 = scale * (-ksi0 * np.sin( ((2*eps)/(alpha-eps)) * np.log(r_factor)) + eta0 * np.cos(((2*eps)/(alpha-eps)) * np.log(r_factor)))
+    # # phi1 = (teta0 + Phi0 + ((beta - eps)/(alpha-eps)) * np.log(r_factor)) % (2*np.pi)
+    # phi1 =  teta0 + Phi0 + ((beta - eps)/(alpha-eps)) * np.log(r_factor)
+
     # LOCAL 2
-    ro = np.sqrt(x[0]**2+x[1]**2)/p
-    x[2] = x[2]
-    phi0 = np.atan2(x[1], x[0]) + x[2]
+    ro = np.sqrt(ksi0**2+eta0**2)/p
+    teta0 = teta0
+    phi0 = np.atan2(eta0, ksi0) + teta0
+
+    # while (phi0 > m.pi):
+    #     phi0 -= 2 * m.pi
+    # while (phi0 < -m.pi):
+    #     phi0 += 2 * m.pi
+
+    # print("ro, teta0, phi0")
+    # print(ro, teta0, phi0)
 
     r = p * (ro / p) ** ((alpha+eps)/(alpha-eps))
-    teta1 = ((beta + eps) / (alpha - eps)) * np.log(p/ro) + x[2]
-    phi1 = ((beta - eps) / (alpha - eps)) * np.log(p/ro) + phi0
-    # phi1 = ((((beta - eps) / (alpha - eps)) * np.log(p/ro) + phi0) % (2 * np.pi)) - np.pi
-    while (phi1 > np.pi):
-        phi1 = phi1 - 2 * np.pi
-    while (phi1 < -np.pi):
-        phi1 += 2 * np.pi
+    teta1 = ((beta + eps) / (alpha - eps)) * np.log(p/ro) + teta0
+    phi1 = (((beta - eps) / (alpha - eps)) * np.log(p/ro) + phi0)
 
+    while (phi1 > m.pi):
+        phi1 = phi1 - 2 * m.pi
+    while (phi1 < -m.pi):
+        phi1 += 2 * m.pi
+    # print("r, teta1, phi1")
+    # print(r, teta1, phi1)
     ksi1 = r * p * np.cos(phi1-teta1)
     eta1 = r * p * np.sin(phi1-teta1)
     phi1 = phi1
 
+    # LOCAL 3
+    # r_factor = (p * p)
+    # scale = pow(r_factor, (-2.0 * eps) / (alpha - eps))
+    # Phi0 = m.atan2(eta0, ksi0)
+    # # angle = (2.0 * eps / (alpha - eps)) * m.log(r_factor)
+        
+    # ksi1 = scale * ksi0 * (ksi0**2+eta0**2)**(eps/(alpha-eps))
+    # eta1 = scale * eta0 * (ksi0**2+eta0**2)**(eps/(alpha-eps))
+    # phi1 = teta0 + Phi0 + ((beta - eps) / (alpha - eps)) * m.log(r_factor/(np.sqrt(ksi0**2+eta0**2)))
+    # while (phi1 > m.pi):
+    #     phi1 = phi1 - 2 * m.pi
+    # while (phi1 < -m.pi):
+    #     phi1 += 2 * m.pi
+
     # ******** S3
-    ksi2 = ksi1 + eps * np.cos(2*phi1)
-    eta2 = eta1 + eps * np.sin(2*phi1)
-    teta2 = phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+    # ksi2 = ksi1 + eps * np.cos(2*phi1)
+    # eta2 = eta1 + eps * np.sin(2*phi1)
+    # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
+    # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+
+    # ******** S2
+    # ksi2 = ksi1 + eps * np.cos(phi1)
+    # eta2 = eta1 + eps * np.sin(phi1)
+    # # # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
+    # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+
+    # ******** S1
+    ksi2 = ksi1 + eps * (0.5 + 0.25 * np.cos(phi1))
+    eta2 = eta1 + 0.75 * eps * np.sin(phi1)
+    # # teta2 = (phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)) % (2 * np.pi)
+    # teta2 =  phi1 + 1 + ksi1 + eta1 + eps * np.sin(phi1)
+    teta2 =  phi1
     while teta2>np.pi:
         teta2 -= 2 * np.pi
     while teta2<-np.pi:
         teta2 += 2 * np.pi
 
-    return np.array([ksi2, eta2, teta2])
+    return np.array([ksi2,eta2,teta2])
+
 
 def example_3d_henon(x: np.ndarray, a: float = 1.4, b: float = 0.3, c: float = 0.1) -> np.ndarray:
     x_new = 1 - a * x[0]**2 + x[1]
@@ -331,14 +424,13 @@ def example_3d_henon(x: np.ndarray, a: float = 1.4, b: float = 0.3, c: float = 0
 # plt.show()
 
 if __name__ == "__main__":
-    # Пример 1: Поиск периодической точки периода 2 для 3D Хенона
     print("Пример 1: Поиск периодической точки для LermanMap")
     print("-" * 60)
     
     # Создаем отображение с фиксированными параметрами
-    per = 20
+    per = 10
     def map(x):
-        return LermanMap(x, eps=0.007, alpha=0.05, beta=0.2, p=1)
+        return LermanMap(x, eps=0.014, alpha=0.048, beta=0.2, p=1)
     
     # Инициализируем поисковики под разные периоды
     finders = []
@@ -353,7 +445,7 @@ if __name__ == "__main__":
         # np.array([-0.00374156, -0.0009989, 2.053225])
         # np.array([0.08049354, -0.04534888, 0.6200527])
         # np.array([-0.08448109, 0.03617788, -1.005346])
-        np.array([-0.002914, -0.006253, 0.071253], dtype=np.longdouble)
+        np.array([0.009804907368803155, 0.005050402256139094, 0.49902186817420713], dtype=np.longdouble)
         # np.array([-0.0010371836, 0.0067190791, 1.9652417036])
         # 0.071253 -0.002914 -0.006253
         #[0.0505, 0.431, 0.2, 1]

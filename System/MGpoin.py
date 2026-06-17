@@ -1,3 +1,8 @@
+'''
+Отрисовка первого пересечения с поверхностью сечения
+в координатах dzeta phi teta
+сечем по phi
+'''
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
@@ -11,6 +16,7 @@ from system import *
 
 np.set_printoptions(suppress=True, precision=10)
 
+@jit(nopython=True, cache=True)
 def norm_solution(start_point):
     if start_point[0] > 2*np.pi:
         start_point[0] -= 2*np.pi
@@ -22,6 +28,7 @@ def norm_solution(start_point):
     elif start_point[1] < 0:
         start_point[1] += 2*np.pi
 
+@jit(nopython=True, cache=True)
 def replace_var(start_point):
     '''
     MG -> dzeta, phi, teta
@@ -34,6 +41,7 @@ def replace_var(start_point):
     norm_solution(point)
     return point.copy()
 
+@jit(nopython=True, cache=True)
 def calc_energy_dpt(start_point,params):
     dzeta, phi, teta = start_point
     ksi = dzeta-phi
@@ -49,6 +57,7 @@ def calc_energy_dpt(start_point,params):
          mpar * g * np.sin(teta) * (ro + a0 * np.sin(phi))
     # print("E(dpt)", E)
 
+@jit(nopython=True, cache=True)
 def back_replace_var(start_point, params):
     '''
     dzeta,phi,teta -> MG
@@ -69,6 +78,7 @@ def back_replace_var(start_point, params):
 
     return np.array([omega1, omega2, gamma1, gamma2, gamma3]).copy()
 
+@jit(nopython=True, cache=True)
 def calc_energy(start_point, params):
     ro, mpar, i1, i2, a0, g, en = params
     omega = np.array([start_point[0], start_point[1], 0])
@@ -82,11 +92,13 @@ def calc_energy(start_point, params):
     # print("Energy", E)
     return E
 
+@jit(nopython=True, cache=True)
 def calc_geom_integral(start_point):
     geom = np.linalg.norm(start_point[2:])
     # print("geom", geom)
     return geom
 
+@jit(nopython=True, cache=True)
 def get_omega(start_point, params):
     ro, mpar, i1, i2, a0, g, eps = params
     ksi, phi, teta = start_point
@@ -97,18 +109,19 @@ def get_omega(start_point, params):
     omega = m.sqrt(omega2)
     return omega
 
-def get_first_cross(start_point, mas_for_points):
-    start = time.time()
+@jit(nopython=True, cache=True)
+def get_first_cross(start_point, mas_for_points, count_m, n):
+    # start = time.time()
     dpt = start_point
     for i in range(int(integrate_time / step)):
-        old_point = start_point.copy()
+        old_point_dpt = dpt.copy()
         start_point = back_replace_var(dpt, params)
         makeStep(start_point, dimension, diffFunc, params, step)
         dpt = replace_var(start_point)
         norm_solution(start_point)
 
-        if (old_point[1] > crossection and dpt[1] < crossection and abs(dpt[1]-old_point[1])<np.pi) or \
-           (old_point[1] < crossection and dpt[1] > crossection and abs(dpt[1]-old_point[1])<np.pi):
+        if (old_point_dpt[1] > crossection and dpt[1] < crossection and abs(dpt[1]-old_point_dpt[1])<np.pi) or \
+           (old_point_dpt[1] < crossection and dpt[1] > crossection and abs(dpt[1]-old_point_dpt[1])<np.pi):
             H = - get_omega(dpt, params) * ctg(dpt[2]) * np.sin(dpt[0])
             print("FIND CROSS")
             makeStep(dpt, dimension_after_replace, diffPoincare, params, -(dpt[1] - np.pi), H)
@@ -121,8 +134,9 @@ def get_first_cross(start_point, mas_for_points):
         if i % skip_for_phase == 0:
             mas_for_points[i // skip_for_phase] = dpt
 
-    end = time.time()
-    print("***********TIME:", end-start)
+    count_m[n] = i
+    # end = time.time()
+    # print("***********TIME:", end-start)
     return dpt.copy()
 
 figPoin = plt.figure(figsize=(6, 6))
@@ -134,6 +148,7 @@ if __name__ == "__main__":
 
     phi = np.linspace(eps, 2*np.pi-eps, DISCR)
     mas_for_points = np.empty((len(phi), int((integrate_time / step) / skip_for_phase), dimension_after_replace))
+    count_mas = np.empty(len(phi), dtype=int)
     result_list = []
     for number, i in enumerate(phi):
         result_list.append(np.array([eps, i, eps]))
@@ -143,7 +158,7 @@ if __name__ == "__main__":
     cross_points = []
     for number, i in enumerate(start_points):
         print(number)
-        cross_points.append(get_first_cross(i, mas_for_points[number]))
+        cross_points.append(get_first_cross(i, mas_for_points[number], count_mas, number))
     print(cross_points)
     # for number, elem in enumerate(mas_for_points):
     #     print(number)
@@ -171,8 +186,8 @@ if __name__ == "__main__":
     colors = plt.cm.plasma(np.linspace(0, 1, len(mas_for_points)))
     points_number = 0
     for i, (traj, color) in enumerate(zip(mas_for_points, colors)):
-            points_number += len(traj)
-            points = pv.PolyData(traj)
+            points_number += len(traj[:count_mas[i]])
+            points = pv.PolyData(traj[:count_mas[i]])
             plotter.add_mesh(points, color=color[:3], point_size=1)
     print(points_number)
     plotter.show()

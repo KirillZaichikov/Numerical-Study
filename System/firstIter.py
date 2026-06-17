@@ -1,3 +1,8 @@
+'''
+Построения следа неустойчивого двумерного 
+для обезразмеренной системы
+ПРОБЛЕМА: траектория выходит за границы
+'''
 import numpy as np
 import math as m
 import matplotlib.pyplot as plt
@@ -10,6 +15,32 @@ from integrator import *
 from system import *
 
 np.set_printoptions(suppress=True, precision=10)
+
+# @jit(nopython=True, cache=True)
+# def check_infinite_cycle(i):
+#     if i > 10:
+#         print("INFINITE CYCLE")
+#     return i + 1
+
+# @jit(nopython=True, cache=True)
+# def norm_solution(start_point):
+#     i=0
+#     while start_point[0] > 2*np.pi:
+#         i = check_infinite_cycle(i)
+#         start_point[0] -= 2*np.pi
+#     i=0
+#     while start_point[0] <0:
+#         i = check_infinite_cycle(i)
+#         start_point[0] += 2*np.pi
+
+#     i=0
+#     while start_point[1] > 2*np.pi:
+#         i = check_infinite_cycle(i)
+#         start_point[1] -= 2*np.pi
+#     i=0
+#     while start_point[1] < 0:
+#         i = check_infinite_cycle(i)
+#         start_point[1] += 2*np.pi
 
 @jit(nopython=True, cache=True)
 def norm_solution(start_point):
@@ -38,33 +69,33 @@ def get_omega(start_point, params):
 def get_first_cross(start_point,mas_for_points):
 
     flag = 0
+
     for i in range(int(integrate_time / step)):
         old_point = start_point.copy()
         makeStep(start_point, dimension_after_replace, diffFunc, params, step)
         norm_solution(start_point)
-
         # if (old_point[1] > crossection and start_point[1] < crossection) or (old_point[1] < crossection and start_point[1] > crossection):
         # if (old_point[1] < crossection and start_point[1] > crossection):
         if (old_point[1] > crossection and start_point[1] < crossection and abs(start_point[1]-old_point[1])<np.pi) or \
             (old_point[1] < crossection and start_point[1] > crossection and abs(start_point[1]-old_point[1])<np.pi):
             flag = 1
             H = - get_omega(start_point, params) * ctg(start_point[2]) * np.sin(start_point[0])
-            # print("FIND CROSS")
+            print("FIND CROSS")
             # print("H", -(start_point[1] - np.pi))
-            # print("old", old_point)
-            # print("new", start_point)
+            print("old", old_point)
+            print("new", start_point)
             makeStep(start_point, dimension_after_replace, diffPoincare, params, -(start_point[1] - crossection), H)
-            # print(i, start_point)
+            print(i, start_point)
             break
         
         if np.isnan(start_point[0]):
-            # print("old_point",old_point)
+            print("old_point",old_point)
             break
 
         if i % skip_for_phase == 0:
             mas_for_points[i // skip_for_phase] = start_point
 
-    # print("last point: ", start_point)
+    print("last point: ", start_point)
     if flag:
         return start_point.copy()
     else:
